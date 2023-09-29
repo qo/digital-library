@@ -14,16 +14,18 @@ Contains code not to be imported by anyone else.
 
 Contains configs.
 
-# How to use Makefile
+# How to use `Makefile`
 
 First of, create a `.env` file. You can leave it empty though.
 
-There is a set of commands for running the server. The commands are listed in the Makefile. Using Makefile you can omit path to config file flag.
+There is a set of commands for running the server. The commands are listed in the `Makefile`.
 
-`make` runs `make start` which reads `.env` for environment variables. If there is a `DIGITAL_LIBRARY_CONFIG` variable specified, the server will try 
+`make` runs `make start` which reads `.env` for environment variables. If there is a `DIGITAL_LIBRARY_CONFIG` variable specified, the server will try to open, parse and use the config on specified path.
 
-# How to specify the path to config if you don't want to use Makefile
+`make local` sets config to `local.yaml` automatically. 
 
-The options are listed in order of priority.
+# How to specify the path to config if you don't want to use `Makefile`
+
+The options are listed in order of priority:
 - `-config` flag
 - export the environment variable `DIGITAL_LIBRARY_CONFIG`
