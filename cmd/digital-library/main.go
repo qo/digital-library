@@ -1,17 +1,28 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	defaultLog "log"
 
 	"github.com/qo/digital-library/internal/config"
+	"github.com/qo/digital-library/internal/logger"
 )
 
 func main() {
   cfg, err := config.Load()
   if err != nil {
-    fmt.Println(err)
-    os.Exit(1)
+    defaultLog.Fatal(err)
   }
-  fmt.Println(cfg)
+  
+  log, err := logger.Init(cfg.Env)
+  if err != nil {
+    defaultLog.Fatal(err)
+  }
+
+  log.Info("config loaded")
+
+  log.Info("config", "cfg", cfg)
+
+  log.Info("logger loaded")
+
+  log.Info("starting server")
 } 
