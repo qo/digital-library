@@ -1,7 +1,7 @@
 environment:
-  env: "local"
+  env: "local" # local, dev, prod
 storage:
-  storage_path: "./storage.db"
+  storage_path: "./.storage/storage.db"
 http_server:
   host: "localhost"
   port: 5455
