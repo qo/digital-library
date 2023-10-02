@@ -8,20 +8,35 @@ import (
 )
 
 type Config struct {
-	EnvironmentConfig `yaml:"environment"`
-	StorageConfig     `yaml:"storage"`
-	HTTPServerConfig  `yaml:"http_server"`
+	EnvironmentOptions `yaml:"environment"`
+	StorageOptions     `yaml:"storage"`
+	HTTPServerOptions  `yaml:"http_server"`
 }
 
-type EnvironmentConfig struct {
+type EnvironmentOptions struct {
 	Env string `yaml:"env" env-default:"local"`
 }
 
-type StorageConfig struct {
-	StoragePath string `yaml:"storage_path" env-required:"true"`
+type StorageOptions struct {
+	Db            string `yaml:"db" env-required:"true"`
+	MySQLOptions  `yaml:"mysql_options"`
+	SQLiteOptions `yaml:"sqlite_options"`
 }
 
-type HTTPServerConfig struct {
+type MySQLOptions struct {
+	Name            string        `yaml:"mysql_name"`
+	User            string        `yaml:"mysql_user"`
+	Password        string        `yaml:"mysql_password"`
+	MaxConnLifetime time.Duration `yaml:"mysql_max_conn_lifetime"`
+	MaxOpenConns    int           `yaml:"mysql_max_open_conns"`
+	MaxIdleConns    int           `yaml:"mysql_max_idle_conns"`
+}
+
+type SQLiteOptions struct {
+	Path string `yaml:"sqlite_path"`
+}
+
+type HTTPServerOptions struct {
 	Host        string        `yaml:"host"         env-default:"localhost"`
 	Port        string        `yaml:"port"         env-default:"5454"`
 	Timeout     time.Duration `yaml:"timeout"      env-default:"5s"`

@@ -1,7 +1,16 @@
 environment:
   env: "local" # local, dev, prod
 storage:
-  storage_path: "./.storage/storage.db"
+  db: "sqlite" # mysql, sqlite
+  mysql_options:
+    mysql_name: "digital-library"
+    mysql_user: "root"
+    mysql_password: "digital-library"
+    mysql_max_conn_lifetime: "3m"
+    mysql_max_open_conns: 10
+    mysql_max_idle_conns: 10
+  sqlite_options:
+    sqlite_path: "./.storage/storage.db"
 http_server:
   host: "localhost"
   port: 5455

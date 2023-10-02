@@ -15,7 +15,7 @@ func (s *Storage) initUsers() error {
 
 	stmt, err := s.db.Prepare(`
     CREATE TABLE IF NOT EXISTS users(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY,
       first_name TEXT,
       second_name TEXT
     );

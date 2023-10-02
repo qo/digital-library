@@ -5,7 +5,7 @@ import (
 
 	"github.com/qo/digital-library/internal/config"
 	"github.com/qo/digital-library/internal/logger"
-	"github.com/qo/digital-library/storage"
+	"github.com/qo/digital-library/internal/storage"
 )
 
 func main() {
@@ -27,9 +27,10 @@ func main() {
 
 	log.Info("starting server")
 
-	s, err := storage.Init(cfg.StoragePath)
+	s, err := storage.Init(cfg.StorageOptions)
 	if err != nil {
 		log.Error(err.Error())
+		return
 	}
 
 	log.Info("storage loaded")
