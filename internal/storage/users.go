@@ -54,3 +54,37 @@ func (s *Storage) GetUser(id int) (*User, error) {
 
 	return &user, nil
 }
+
+func (s *Storage) PutUser(user *User) (int, error) {
+	const errMsg = "can't put user"
+
+	stmt, err := s.db.Prepare(`
+    INSERT INTO users
+    (id, first_name, second_name)
+    VALUES
+    (?, ?, ?);
+  `)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	stmt.QueryRow(user.Id, user.FirstName, user.SecondName)
+
+	return user.Id, nil
+}
+
+func (s *Storage) DeleteUser(id int) (int, error) {
+	const errMsg = "can't delete user"
+
+	stmt, err := s.db.Prepare(`
+    DELETE FROM users
+    WHERE id = ?;
+  `)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	stmt.QueryRow(id)
+
+	return id, nil
+}

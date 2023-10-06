@@ -22,6 +22,17 @@ func open(path string) (*Storage, error) {
 	return &Storage{db}, nil
 }
 
+func (s *Storage) initTables() error {
+	const errMsg = "can't init tables"
+
+	err := s.initUsers()
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	return nil
+}
+
 func Init(path string) (*Storage, error) {
 	const errMsg = "can't init storage"
 
@@ -30,7 +41,7 @@ func Init(path string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	err = st.initUsers()
+	err = st.initTables()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}

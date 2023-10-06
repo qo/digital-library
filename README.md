@@ -27,3 +27,15 @@ There is a set of commands for running the server. The commands are listed in th
 The options are listed in order of priority.
 - `-config` flag
 - export the environment variable `DIGITAL_LIBRARY_CONFIG`
+
+# How to use REST API
+
+I recommend using `curl`.
+
+Send the following requests to manage users:
+
+`curl -X GET "http://localhost:PORT/user/ID"` - get the user with id of `ID` while server is running on `PORT` port
+
+`curl -X PUT "http://localhost:PORT/user` -H "Content-Type: application/json" -d '{"id": ID, "first_name": FIRST_NAME, "second_name": SECOND_NAME}' - add a user with id of `ID` (value of type int, do not put quotes), first name of `FIRST_NAME` (value of type string, do put quotes), second name of `SECOND_NAME` (value of type string, do put quotes) while server is running on `PORT` port
+
+`curl -X DELETE "http://localhost:PORT/user/ID"` - delete the user with id of `ID` while server is running on `PORT` port

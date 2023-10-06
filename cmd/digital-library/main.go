@@ -1,12 +1,20 @@
 package main
 
 import (
+	"fmt"
 	defaultLog "log"
+	"net/http"
 
 	"github.com/qo/digital-library/internal/config"
 	"github.com/qo/digital-library/internal/logger"
-	"github.com/qo/digital-library/storage"
+	"github.com/qo/digital-library/internal/router"
+	"github.com/qo/digital-library/internal/storage"
 )
+
+func serve(host string, port int, handler http.Handler) {
+	addr := fmt.Sprintf("%s:%d", host, port)
+	http.ListenAndServe(addr, handler)
+}
 
 func main() {
 	cfg, err := config.Load()
@@ -25,8 +33,6 @@ func main() {
 
 	log.Info("logger loaded")
 
-	log.Info("starting server")
-
 	s, err := storage.Init(cfg.StoragePath)
 	if err != nil {
 		log.Error(err.Error())
@@ -34,10 +40,11 @@ func main() {
 
 	log.Info("storage loaded")
 
-	user, err := s.GetUser(1)
-	if err != nil {
-		log.Error(err.Error())
-	} else {
-		log.Info("user pulled", "user", user)
-	}
+	router := router.Init(log, s)
+
+	log.Info("router started")
+
+	log.Info("start serving")
+
+	serve(cfg.Host, cfg.Port, router)
 }

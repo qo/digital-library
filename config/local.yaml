@@ -4,6 +4,6 @@ storage:
   storage_path: "./.storage/storage.db"
 http_server:
   host: "localhost"
-  port: 5455
+  port: 5454
   timeout: 20s
   idle_timeout: 40s
