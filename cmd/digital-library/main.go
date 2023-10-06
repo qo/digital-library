@@ -33,9 +33,12 @@ func main() {
 
 	log.Info("logger loaded")
 
-	s, err := storage.Init(cfg.StoragePath)
+	log.Info("starting server")
+
+	s, err := storage.Init(cfg.StorageOptions)
 	if err != nil {
 		log.Error(err.Error())
+		return
 	}
 
 	log.Info("storage loaded")
@@ -46,5 +49,5 @@ func main() {
 
 	log.Info("start serving")
 
-	serve(cfg.Host, cfg.Port, router)
+	serve(cfg.HTTPServerOptions.Host, cfg.HTTPServerOptions.Port, router)
 }
