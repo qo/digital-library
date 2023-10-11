@@ -10,7 +10,7 @@ func (r Router) initApiRoutes() {
 
 func (r Router) initApiRouter() *Router {
 	cr := chi.NewRouter()
-	ar := Router{r.logger, r.storage, cr}
+	ar := Router{r.logger, r.storage, cr, r.proto, r.host, r.port}
 	ar.initApiRoutes()
 	return &ar
 }

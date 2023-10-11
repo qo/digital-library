@@ -12,6 +12,7 @@ storage:
   sqlite_options:
     sqlite_path: "./.storage/storage.db"
 http_server:
+  proto: "http"
   host: "localhost"
   port: 5454
   timeout: 20s

@@ -33,7 +33,7 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			render.JSON(w, r, GetResponse{
-				Status:     500,
+				Status:     http.StatusInternalServerError,
 				Error:      "user id is not a number",
 				Id:         0,
 				FirstName:  "",
@@ -47,7 +47,7 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		// TODO: check type of error
 		if err != nil {
 			render.JSON(w, r, GetResponse{
-				Status:     500,
+				Status:     http.StatusInternalServerError,
 				Error:      "db error",
 				Id:         0,
 				FirstName:  "",
@@ -60,7 +60,7 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		log.Debug("get user success", "user", user)
 
 		render.JSON(w, r, GetResponse{
-			Status:     200,
+			Status:     http.StatusOK,
 			Id:         user.Id,
 			FirstName:  user.FirstName,
 			SecondName: user.SecondName,
@@ -89,7 +89,7 @@ func Put(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			render.JSON(w, r, PutResponse{
-				Status: 500,
+				Status: http.StatusInternalServerError,
 				Error:  "invalid request",
 				Id:     0,
 			})
@@ -109,7 +109,7 @@ func Put(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		// TODO: check type of error
 		if err != nil {
 			render.JSON(w, r, PutResponse{
-				Status: 500,
+				Status: http.StatusInternalServerError,
 				Error:  "db error",
 				Id:     id,
 			})
@@ -120,7 +120,7 @@ func Put(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		log.Debug("put user success", "id", id)
 
 		render.JSON(w, r, PutResponse{
-			Status: 200,
+			Status: http.StatusOK,
 			Id:     id,
 		})
 	}
@@ -140,7 +140,7 @@ func Delete(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			render.JSON(w, r, DeleteResponse{
-				Status: 500,
+				Status: http.StatusInternalServerError,
 				Error:  "user id is not a number",
 				Id:     0,
 			})
@@ -152,7 +152,7 @@ func Delete(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		// TODO: check type of error
 		if err != nil {
 			render.JSON(w, r, DeleteResponse{
-				Status: 500,
+				Status: http.StatusInternalServerError,
 				Error:  "db error",
 				Id:     0,
 			})
@@ -163,7 +163,7 @@ func Delete(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		log.Debug("delete user success", "deletedId", deletedId)
 
 		render.JSON(w, r, DeleteResponse{
-			Status: 200,
+			Status: http.StatusOK,
 			Id:     id,
 		})
 	}

@@ -18,9 +18,9 @@ type EnvironmentOptions struct {
 }
 
 type StorageOptions struct {
-	Db            string `yaml:"db" env-required:"true"`
-	MySQLOptions  `yaml:"mysql_options"`
-	SQLiteOptions `yaml:"sqlite_options"`
+	Db            string `yaml:"db"             env-required:"true"`
+	MySQLOptions  `       yaml:"mysql_options"`
+	SQLiteOptions `       yaml:"sqlite_options"`
 }
 
 type MySQLOptions struct {
@@ -37,6 +37,7 @@ type SQLiteOptions struct {
 }
 
 type HTTPServerOptions struct {
+	Proto       string        `yaml:"proto"        env-default:"https"`
 	Host        string        `yaml:"host"         env-default:"localhost"`
 	Port        int           `yaml:"port"         env-default:"5454"`
 	Timeout     time.Duration `yaml:"timeout"      env-default:"5s"`

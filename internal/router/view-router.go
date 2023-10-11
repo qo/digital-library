@@ -5,11 +5,12 @@ import (
 )
 
 func (r Router) initViewRoutes() {
+	r.initUserViewRoutes()
 }
 
 func (r Router) initViewRouter() *Router {
 	cr := chi.NewRouter()
-	ar := Router{r.logger, r.storage, cr}
+	ar := Router{r.logger, r.storage, cr, r.proto, r.host, r.port}
 	ar.initViewRoutes()
 	return &ar
 }

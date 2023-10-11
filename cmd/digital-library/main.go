@@ -43,7 +43,7 @@ func main() {
 
 	log.Info("storage loaded")
 
-	router := router.Init(log, s)
+	router := router.Init(log, s, cfg.Proto, cfg.Host, cfg.Port)
 
 	log.Info("router started")
 
