@@ -4,7 +4,8 @@ import (
 	"log/slog"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/qo/digital-library/internal/handlers/user"
+
+	"github.com/qo/digital-library/internal/handlers/api/user"
 )
 
 type Router struct {
@@ -18,7 +19,9 @@ type Storage interface {
 }
 
 func (r Router) initRoutes() {
-	r.initUserRoutes()
+	r.Mount("/api", r.initApiRouter())
+	// TODO: uncomment the live below
+	r.Mount("/", r.initViewRouter())
 }
 
 func Init(log *slog.Logger, s Storage) *Router {
