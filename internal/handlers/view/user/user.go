@@ -62,7 +62,7 @@ func Get(log *slog.Logger, proto string, host string, port int) http.HandlerFunc
 			return
 		}
 
-		tp := path.Join("internal", "templates", "user.tmpl")
+		tp := path.Join("internal", "views", "user", "user.tmpl")
 
 		tmpl, err := template.ParseFiles(tp)
 		if err != nil {
