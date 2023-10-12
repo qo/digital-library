@@ -1,3 +1,53 @@
+# Domain
+
+## Specification
+
+### Points of view
+
+#### User
+
+User should be able to:
+- view and download books
+- read, create, edit and delete their own reviews
+- read other people reviews
+- mark some books as favorite
+- view other people profiles
+
+#### Mod
+
+Mod should be able to:
+- do all the things the User can
+- delete other people reviews
+
+#### Admin
+
+Admin should be able to:
+- do all the things Mod can
+- upload and delete books
+- create and delete users
+- edit user roles from User to Mod and from Mod to User
+
+### Restrictions
+
+#### Book file extension
+
+Book file extension should be PDF
+
+### Stack
+
+Technology stack should be:
+- frontend: ...
+- backend: Go
+- DBMS: SQLite or MySQL
+
+### Work flow
+
+Both frontend and backend should run locally. If MySQL is used, it should run in a Docker container. There should be an option to specify the environment - local, development or production.
+
+## Entity-Relation Diagram
+
+![ERD](docs/ERD.svg)
+
 # Project structure
 
 The project tries to follow the guidelines described in [this](https://github.com/golang-standards/project-layout) repository.
@@ -94,3 +144,4 @@ sudo docker run --tty --name digital-library-mysql -p 3306:3306 -e MYSQL_DATABAS
 This will create and start a Docker container named `digital-library-mysql` from `mysql:8` image on port `3306` that creates `digital-library` MySQL database with `digital-library` password for root user that will store it's data on `mysql` volume in `/var/lib/digital-library` directory and will run even after system restart unless the container gets stopped manually.
 
 You can also set up a container network and configure MySQL more thoroughly.
+
