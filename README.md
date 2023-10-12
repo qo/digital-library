@@ -94,3 +94,7 @@ sudo docker run --tty --name digital-library-mysql -p 3306:3306 -e MYSQL_DATABAS
 This will create and start a Docker container named `digital-library-mysql` from `mysql:8` image on port `3306` that creates `digital-library` MySQL database with `digital-library` password for root user that will store it's data on `mysql` volume in `/var/lib/digital-library` directory and will run even after system restart unless the container gets stopped manually.
 
 You can also set up a container network and configure MySQL more thoroughly.
+
+# Entity-relation diagram
+
+![ERD](docs/ERD.svg)
