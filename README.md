@@ -110,7 +110,7 @@ I recommend to install it as a Docker container so it's isolated from your main 
 
 ### Install Docker 
 
-(Source)[https://docs.docker.com/engine/install/fedora/]
+[Source](https://docs.docker.com/engine/install/fedora/)
 
 #### Set up repository
 
@@ -133,7 +133,7 @@ sudo systemctl start docker
 
 ### Install MySQL
 
-(Source)[https://earthly.dev/blog/docker-mysql/]
+[Source](https://earthly.dev/blog/docker-mysql/)
 
 #### Start a MySQL server instance
 
