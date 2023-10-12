@@ -8,6 +8,7 @@ type User struct {
 	Id         int
 	FirstName  string
 	SecondName string
+	Role       int // 1 - user, 2 - mod, 3 - admin
 }
 
 func (s *Storage) initUsers() error {
@@ -17,7 +18,8 @@ func (s *Storage) initUsers() error {
     CREATE TABLE IF NOT EXISTS users(
       id INTEGER PRIMARY KEY,
       first_name TEXT,
-      second_name TEXT
+      second_name TEXT,
+      role INTEGER
     );
   `)
 	if err != nil {
@@ -60,15 +62,15 @@ func (s *Storage) PutUser(user *User) (int, error) {
 
 	stmt, err := s.db.Prepare(`
     INSERT INTO users
-    (id, first_name, second_name)
+    (id, first_name, second_name, role)
     VALUES
-    (?, ?, ?);
+    (?, ?, ?, ?);
   `)
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	stmt.QueryRow(user.Id, user.FirstName, user.SecondName)
+	stmt.QueryRow(user.Id, user.FirstName, user.SecondName, user.Role)
 
 	return user.Id, nil
 }
