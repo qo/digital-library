@@ -46,7 +46,7 @@ Both frontend and backend should run locally. If MySQL is used, it should run in
 
 ## Entity-Relation Diagram
 
-![ERD](docs/ERD.svg)
+![ERD](docs/images/ERD.svg)
 
 # Project structure
 
