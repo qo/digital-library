@@ -5,6 +5,7 @@ import (
 )
 
 func (r Router) initApiRoutes() {
+	r.initSwaggerViewRoutes()
 	r.initUserApiRoutes()
 }
 

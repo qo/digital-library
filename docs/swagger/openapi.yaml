@@ -4,7 +4,7 @@ info:
   description: This is a swagger API for a Digital Library project
   version: 1.0.11
 servers:
-  - url: some-made-up-server
+  - url: /api
 tags:
   - name: user
     description: Everything about users
