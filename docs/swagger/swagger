@@ -251,7 +251,7 @@ paths:
         '503':
           description: Service Unavailable
           
-    /author:
+  /author:
     post:
       tags:
         - author
