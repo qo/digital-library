@@ -1,0 +1,140 @@
+openapi: 3.0.3
+info:
+  title: Digital Library - OpenAPI 3.0
+  description: This is a swagger API for a Digital Library project
+  version: 1.0.11
+servers:
+  - url: some-made-up-server
+tags:
+  - name: user
+    description: Everything about users
+  - name: book
+    description: Everything about books
+  - name: author
+    description: Everything about authors
+paths:
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Get user info
+      description: Get user id, first, second name and role
+      operationId: getUser
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user to get
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: User not found
+        '405':
+          description: Validation exception
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        first_name:
+          type: string
+          example: admin
+        second_name:
+          type: string
+          example: admin
+        role:
+          type: integer
+          format: int64
+          description: User role (user, mod, admin)
+          example: 3
+          enum:
+            - 1
+            - 2
+            - 3
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        isbn:
+          type: string
+          example: 978-5-04-116479
+        title:
+          type: string
+          example: 1984
+        year:
+          type: integer
+          format: int64
+          example: 1949
+        publisher:
+          type: string
+          example: ...
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        full_name:
+          type: string
+          example: George Orwell
+    FavoriteBook:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
+    BookReview:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
+    FavoriteAuthor:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        author_id:
+          type: integer
+          format: int64
+          example: 1
+    Authorship:
+      type: object
+      properties:
+        author_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
