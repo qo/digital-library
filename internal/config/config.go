@@ -33,7 +33,8 @@ type MySQLOptions struct {
 }
 
 type SQLiteOptions struct {
-	Path string `yaml:"sqlite_path"`
+	Path        string `yaml:"sqlite_path"`
+	ForeignKeys bool   `yaml:"sqlite_foreign_keys"`
 }
 
 type HTTPServerOptions struct {

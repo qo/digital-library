@@ -11,6 +11,7 @@ storage:
     mysql_max_idle_conns: 10
   sqlite_options:
     sqlite_path: "./.storage/storage.db"
+    sqlite_foreign_keys: true
 http_server:
   proto: "http"
   host: "localhost"

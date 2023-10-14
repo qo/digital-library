@@ -11,7 +11,16 @@ import (
 func Open(options config.SQLiteOptions) (*sql.DB, error) {
 	const errMsg = "can't open sqlite db"
 
-	db, err := sql.Open("sqlite3", options.Path)
+	foreignKeys := ""
+	if options.ForeignKeys {
+		foreignKeys = "on"
+	} else {
+		foreignKeys = "off"
+	}
+
+	optionsString := fmt.Sprintf("file:%s?_foreign_keys=%s", options.Path, foreignKeys)
+
+	db, err := sql.Open("sqlite3", optionsString)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
