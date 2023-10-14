@@ -131,6 +131,102 @@ paths:
         '503':
           description: Service Unavailable
           
+  /user/{id}/books:
+    get:
+      tags:
+        - user
+      summary: Get the favorite books for the specified user
+      description: Get the ID, ISBN, title, year and publisher for each book that is favorite for the user with the specified ID
+      operationId: getUsersBooks
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: User's Books Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        '400':
+          description: Bad Request
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+
+  /user/{id}/authors:
+    get:
+      tags:
+        - user
+      summary: Get the favorite authors for the specified user
+      description: Get the ID and full name for each author that is favorite for the user with the specified ID
+      operationId: getUsersAuthors
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: User's Authors Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Author"
+        '400':
+          description: Bad Request
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+
+  /user/{id}/reviews:
+    get:
+      tags:
+        - user
+      summary: Get the reviews written by the specified user
+      description: Get the book ID, ISBN, title, year and publisher and review rating for each review written by the user with the specified ID
+      operationId: getUsersReviews
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+      responses:
+        '200':
+          description: User's Reviews Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReviewByUser"
+        '400':
+          description: Bad Request
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+
   /book:
     post:
       tags:
@@ -251,6 +347,102 @@ paths:
         '503':
           description: Service Unavailable
           
+  /book/{id}/users:
+    get:
+      tags:
+        - book
+      summary: Get the users that have this book as their favorite
+      description: Get the ID, first, second name and role of each user that has the book with the specified ID as their favorite
+      operationId: getBooksUsers
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Book's Users Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        '400':
+          description: Bad Request
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
+  /book/{id}/authors:
+    get:
+      tags:
+        - book
+      summary: Get the authors of the specified book
+      description: Get the ID and full name of each author of the book with the specified ID
+      operationId: getBooksAuthors
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Book's Authors Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Author"
+        '400':
+          description: Bad Request
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable        
+          
+  /book/{id}/reviews:
+    get:
+      tags:
+        - book
+      summary: Get the reviews on the specified book
+      description: Get the user ID, first, second name and role and review rating for each review on the book with the specified ID
+      operationId: getBooksReviews
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Book's Reviews Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReviewOfBook"
+        '400':
+          description: Bad Request
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  
   /author:
     post:
       tags:
@@ -370,13 +562,46 @@ paths:
           description: Internal Server Error
         '503':
           description: Service Unavailable
+          
+  /author/{id}/users:
+    get:
+      tags:
+        - author
+      summary: Get all users that have the specified author as their favorite
+      description: Get the ID, first, second name and role of each user that have the author with the speicified ID as their favorite
+      operationId: getAuthorsUsers
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+      responses:
+        '200':
+          description: Author's Users Fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        '400':
+          description: Bad Request
+        '404':
+          description: Author Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
   /author/{id}/books:
     get:
       tags:
         - author
       summary: Get all the books of the specified author
       description: Get the ID, ISBN, title, year and publisher of each book the author with the specified ID wrote
-      operationId: getAuthorBooks
+      operationId: getAuthorsBooks
       parameters:
         - in: path
           name: id
@@ -435,17 +660,17 @@ components:
           example: 1
         isbn:
           type: string
-          example: 978-5-04-116479
+          example: 978-0451524
         title:
           type: string
           example: 1984
         year:
           type: integer
           format: int64
-          example: 1949
+          example: 1961
         publisher:
           type: string
-          example: ...
+          example: Signet Classic
     Author:
       type: object
       properties:
@@ -456,47 +681,21 @@ components:
         full_name:
           type: string
           example: George Orwell
-    FavoriteBook:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          format: int64
-          example: 1
-        book_id:
-          type: integer
-          format: int64
-          example: 1
-    BookReview:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          format: int64
-          example: 1
-        book_id:
-          type: integer
-          format: int64
-          example: 1
-    FavoriteAuthor:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          format: int64
-          example: 1
-        author_id:
-          type: integer
-          format: int64
-          example: 1
-    Authorship:
-      type: object
-      properties:
-        author_id:
-          type: integer
-          format: int64
-          example: 1
-        book_id:
-          type: integer
-          format: int64
-          example: 1
+    ReviewByUser:
+      allOf:
+        - $ref: '#/components/schemas/Book'
+        - type: object
+          properties:
+            rating:
+              type: integer
+              format: int64
+              example: 10
+    ReviewOfBook:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            rating:
+              type: integer
+              format: int64
+              example: 10
