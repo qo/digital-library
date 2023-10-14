@@ -12,6 +12,14 @@ tags:
     description: Everything about books
   - name: author
     description: Everything about authors
+  - name: favorite book
+    description: Books favorited by user
+  - name: book review
+    description: Books reviewed by user
+  - name: favorite author
+    description: Authors favorited by user
+  - name: authorship
+    description: Book written by author
 paths:
   /user:
     post:
@@ -627,6 +635,77 @@ paths:
         '503':
           description: Service Unavailable
           
+  /favorite-book/{user_id}/{book_id}:
+    post:
+      tags:
+        - favorite book
+      summary: Make the specified book favorited by the specified user
+      description: Make the book with the specified ID favorited by the user with the specified ID
+      operationId: postFavoriteBook
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Book Favorited
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  
+    delete:
+      tags:
+        - favorite book
+      summary: Make the specified book not favorited by the specified user
+      description: Make the book with the specified ID not favorited by the user with the specified ID
+      operationId: deleteFavoriteBook
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Book Not Favorited
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
 components:
   schemas:
     User:
@@ -698,4 +777,47 @@ components:
             rating:
               type: integer
               format: int64
-              example: 10
+    FavoriteBook:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
+    BookReview:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
+    FavoriteAuthor:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        author_id:
+          type: integer
+          format: int64
+          example: 1
+    Authorship:
+      type: object
+      properties:
+        author_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
