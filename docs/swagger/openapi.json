@@ -3,11 +3,11 @@
   "info": {
     "title": "Digital Library - OpenAPI 3.0",
     "description": "This is a swagger API for a Digital Library project",
-    "version": "v1"
+    "version": "1.0.11"
   },
   "servers": [
     {
-      "url": "some-made-up-server"
+      "url": "/api"
     }
   ],
   "tags": [
@@ -22,6 +22,22 @@
     {
       "name": "author",
       "description": "Everything about authors"
+    },
+    {
+      "name": "favorite book",
+      "description": "Books favorited by user"
+    },
+    {
+      "name": "book review",
+      "description": "Books reviewed by user"
+    },
+    {
+      "name": "favorite author",
+      "description": "Authors favorited by user"
+    },
+    {
+      "name": "authorship",
+      "description": "Book written by author"
     }
   ],
   "paths": {
@@ -190,6 +206,150 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/user/{id}/books": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the favorite books for the specified user",
+        "description": "Get the ID, ISBN, title, year and publisher for each book that is favorite for the user with the specified ID",
+        "operationId": "getUsersBooks",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's Books Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Book"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/user/{id}/authors": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the favorite authors for the specified user",
+        "description": "Get the ID and full name for each author that is favorite for the user with the specified ID",
+        "operationId": "getUsersAuthors",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's Authors Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/user/{id}/reviews": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the reviews written by the specified user",
+        "description": "Get the book ID, ISBN, title, year and publisher and review rating for each review written by the user with the specified ID",
+        "operationId": "getUsersReviews",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User's Reviews Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewByUser"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "User Not Found"
@@ -384,6 +544,150 @@
         }
       }
     },
+    "/book/{id}/users": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Get the users that have this book as their favorite",
+        "description": "Get the ID, first, second name and role of each user that has the book with the specified ID as their favorite",
+        "operationId": "getBooksUsers",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book's Users Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/book/{id}/authors": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Get the authors of the specified book",
+        "description": "Get the ID and full name of each author of the book with the specified ID",
+        "operationId": "getBooksAuthors",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book's Authors Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/book/{id}/reviews": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Get the reviews on the specified book",
+        "description": "Get the user ID, first, second name and role and review rating for each review on the book with the specified ID",
+        "operationId": "getBooksReviews",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book's Reviews Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewOfBook"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
     "/author": {
       "post": {
         "tags": [
@@ -565,6 +869,54 @@
         }
       }
     },
+    "/author/{id}/users": {
+      "get": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Get all users that have the specified author as their favorite",
+        "description": "Get the ID, first, second name and role of each user that have the author with the speicified ID as their favorite",
+        "operationId": "getAuthorsUsers",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author's Users Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Author Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
     "/author/{id}/books": {
       "get": {
         "tags": [
@@ -572,7 +924,7 @@
         ],
         "summary": "Get all the books of the specified author",
         "description": "Get the ID, ISBN, title, year and publisher of each book the author with the specified ID wrote",
-        "operationId": "getAuthorBooks",
+        "operationId": "getAuthorsBooks",
         "parameters": [
           {
             "in": "path",
@@ -603,6 +955,685 @@
           },
           "404": {
             "description": "Author Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/favorite-book/{user_id}/{book_id}": {
+      "get": {
+        "tags": [
+          "favorite book"
+        ],
+        "summary": "Get if the specified book is favorited by the specified user",
+        "description": "Get if the book with the specified ID is favorited by the user with the specified ID",
+        "operationId": "getFavoriteBook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite Book Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "favorited": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "favorite book"
+        ],
+        "summary": "Make the specified book favorited by the specified user",
+        "description": "Make the book with the specified ID favorited by the user with the specified ID",
+        "operationId": "postFavoriteBook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book Favorited"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "favorite book"
+        ],
+        "summary": "Make the specified book not favorited by the specified user",
+        "description": "Make the book with the specified ID not favorited by the user with the specified ID",
+        "operationId": "deleteFavoriteBook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book Not Favorited"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/book-review/{user_id}/{book_id}": {
+      "get": {
+        "tags": [
+          "book review"
+        ],
+        "summary": "Get review on the specified book written by the specified user",
+        "description": "Get rating on the book with the specified ID written by the user with the specified ID",
+        "operationId": "getBookReview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book Review Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookReview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "book review"
+        ],
+        "summary": "Make the specified book reviewed by the specified user",
+        "description": "Make the book with the specified ID reviewed with specified rating by the user with the specified ID",
+        "operationId": "postBookReview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "requestBody": {
+          "description": "Review info",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book Review Posted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "book review"
+        ],
+        "summary": "Make the specified book not reviewed by the specified user",
+        "description": "Make the book with the specified ID not reviewed with specified rating by the user with the specified ID",
+        "operationId": "deleteBookReview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book Review Deleted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/favorite-author/{user_id}/{author_id}": {
+      "get": {
+        "tags": [
+          "favorite author"
+        ],
+        "summary": "Get if the specified author is favorited by the specified user",
+        "description": "Get if the author with the specified ID is favorited by the user with the specified ID",
+        "operationId": "getFavoriteAuthor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "author_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite Author Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "favorited": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "favorite author"
+        ],
+        "summary": "Make the specified author favorited by the specified user",
+        "description": "Make the author with the specified ID favorited by the user with the specified ID",
+        "operationId": "postFavoriteAuthor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "author_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author Favorited"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Author Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "favorite author"
+        ],
+        "summary": "Make the specified author not favorited by the specified user",
+        "description": "Make the author with the specified ID not favorited by the user with the specified ID",
+        "operationId": "deleteFavoriteAuthor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the user"
+          },
+          {
+            "in": "path",
+            "name": "author_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author Not Favorited"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Author Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/authorship/{author_id}/{book_id}": {
+      "get": {
+        "tags": [
+          "authorship"
+        ],
+        "summary": "Get if the specified book is authored by the specified author",
+        "description": "Get if the book with the specified ID is authored by the author with the specified ID",
+        "operationId": "getAuthorship",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "author_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorship Fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "authored": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "authorship"
+        ],
+        "summary": "Make the specified book authored by the specified author",
+        "description": "Make the book with the specified ID authored by the author with the specified ID",
+        "operationId": "postAuthorship",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "author_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorship Posted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Author Or Book Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "authorship"
+        ],
+        "summary": "Make the specified book not authored by the specified author",
+        "description": "Make the book with the specified ID not authored by the author with the specified ID",
+        "operationId": "deleteAuthorship",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "author_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the author"
+          },
+          {
+            "in": "path",
+            "name": "book_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the book"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorship Deleted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Author Or Book Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -655,7 +1686,7 @@
           },
           "isbn": {
             "type": "string",
-            "example": "978-5-04-116479"
+            "example": "978-0451524"
           },
           "title": {
             "type": "string",
@@ -664,11 +1695,11 @@
           "year": {
             "type": "integer",
             "format": "int64",
-            "example": 1949
+            "example": 1961
           },
           "publisher": {
             "type": "string",
-            "example": "..."
+            "example": "Signet Classic"
           }
         }
       },
@@ -685,6 +1716,39 @@
             "example": "George Orwell"
           }
         }
+      },
+      "ReviewByUser": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Book"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "rating": {
+                "type": "integer",
+                "format": "int64",
+                "example": 10
+              }
+            }
+          }
+        ]
+      },
+      "ReviewOfBook": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/User"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "rating": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        ]
       },
       "FavoriteBook": {
         "type": "object",
@@ -713,6 +1777,11 @@
             "type": "integer",
             "format": "int64",
             "example": 1
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int64",
+            "example": 5
           }
         }
       },

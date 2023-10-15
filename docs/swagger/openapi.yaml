@@ -636,6 +636,48 @@ paths:
           description: Service Unavailable
           
   /favorite-book/{user_id}/{book_id}:
+    get:
+      tags:
+        - favorite book
+      summary: Get if the specified book is favorited by the specified user
+      description: Get if the book with the specified ID is favorited by the user with the specified ID
+      operationId: getFavoriteBook
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Favorite Book Fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favorited:
+                    type: boolean
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
     post:
       tags:
         - favorite book
@@ -706,6 +748,351 @@ paths:
         '503':
           description: Service Unavailable
           
+  /book-review/{user_id}/{book_id}:
+    get:
+      tags:
+        - book review
+      summary: Get review on the specified book written by the specified user
+      description: Get rating on the book with the specified ID written by the user with the specified ID
+      operationId: getBookReview
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Book Review Fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookReview'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
+    post:
+      tags:
+        - book review
+      summary: Make the specified book reviewed by the specified user
+      description: Make the book with the specified ID reviewed with specified rating by the user with the specified ID
+      operationId: postBookReview
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      requestBody:
+        description: Review info
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+          
+      responses:
+        '200':
+          description: Book Review Posted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  
+    delete:
+      tags:
+        - book review
+      summary: Make the specified book not reviewed by the specified user
+      description: Make the book with the specified ID not reviewed with specified rating by the user with the specified ID
+      operationId: deleteBookReview
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+          
+      responses:
+        '200':
+          description: Book Review Deleted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
+  /favorite-author/{user_id}/{author_id}:
+    get:
+      tags:
+        - favorite author
+      summary: Get if the specified author is favorited by the specified user
+      description: Get if the author with the specified ID is favorited by the user with the specified ID
+      operationId: getFavoriteAuthor
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: author_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+      responses:
+        '200':
+          description: Favorite Author Fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favorited:
+                    type: boolean
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    post:
+      tags:
+        - favorite author
+      summary: Make the specified author favorited by the specified user
+      description: Make the author with the specified ID favorited by the user with the specified ID
+      operationId: postFavoriteAuthor
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: author_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+      responses:
+        '200':
+          description: Author Favorited
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Author Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  
+    delete:
+      tags:
+        - favorite author
+      summary: Make the specified author not favorited by the specified user
+      description: Make the author with the specified ID not favorited by the user with the specified ID
+      operationId: deleteFavoriteAuthor
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the user
+        - in: path
+          name: author_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+      responses:
+        '200':
+          description: Author Not Favorited
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Author Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+          
+  /authorship/{author_id}/{book_id}:
+    get:
+      tags:
+        - authorship
+      summary: Get if the specified book is authored by the specified author
+      description: Get if the book with the specified ID is authored by the author with the specified ID
+      operationId: getAuthorship
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Authorship Fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authored:
+                    type: boolean
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: User Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    post:
+      tags:
+        - authorship
+      summary: Make the specified book authored by the specified author
+      description: Make the book with the specified ID authored by the author with the specified ID
+      operationId: postAuthorship
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Authorship Posted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Author Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  
+    delete:
+      tags:
+        - authorship
+      summary: Make the specified book not authored by the specified author
+      description: Make the book with the specified ID not authored by the author with the specified ID
+      operationId: deleteAuthorship
+      parameters:
+        - in: path
+          name: author_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the author
+        - in: path
+          name: book_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the book
+      responses:
+        '200':
+          description: Authorship Deleted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Author Or Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
 components:
   schemas:
     User:
@@ -799,6 +1186,10 @@ components:
           type: integer
           format: int64
           example: 1
+        rating:
+          type: integer
+          format: int64
+          example: 5
     FavoriteAuthor:
       type: object
       properties:
