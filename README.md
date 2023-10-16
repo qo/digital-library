@@ -66,7 +66,7 @@ Contains configs.
 
 ## `docs`
 
-Contains files that describe the project and are not files.
+Contains files that describe the project and are not code.
 
 ## `internal`
 
@@ -114,6 +114,12 @@ The instructions are Fedora-specific, but the process itself should be the same 
 
 `
 sudo dnf -y install sqlite
+`
+
+## Create SQLite database
+
+`
+mkdir .storage && sqlite3 .storage/storage.db
 `
 
 ## MySQL
