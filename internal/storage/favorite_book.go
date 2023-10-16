@@ -5,8 +5,8 @@ import (
 )
 
 type FavoriteBook struct {
-	UserId int
-	BookId int
+	UserId int `json:"user_id"`
+	BookId int `json:"book_id"`
 }
 
 func (s *Storage) initFavoriteBooks() error {

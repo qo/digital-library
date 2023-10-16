@@ -5,11 +5,11 @@ import (
 )
 
 type Book struct {
-	Id        int
-	Isbn      string
-	Title     string
-	Year      int
-	Publisher string
+	Id        int    `json:"id"`
+	Isbn      string `json:"isbn"`
+	Title     string `json:"title"`
+	Year      int    `json:"year"`
+	Publisher string `json:"publisher"`
 }
 
 func (s *Storage) initBooks() error {
@@ -29,6 +29,25 @@ func (s *Storage) initBooks() error {
 	}
 
 	_, err = stmt.Exec()
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	return nil
+}
+
+func (s *Storage) PostBook(book *Book) error {
+	const errMsg = "can't post book"
+
+	stmt, err := s.db.Prepare(`
+    INSERT INTO books(id, isbn, title, year, publisher)
+    VALUES (?, ?, ?, ?, ?);
+  `)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	_, err = stmt.Exec(book.Id, book.Isbn, book.Title, book.Year, book.Publisher)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
 	}
@@ -59,7 +78,7 @@ func (s *Storage) GetBook(id int) (*Book, error) {
 	return &book, nil
 }
 
-func (s *Storage) PutBook(book *Book) (int, error) {
+func (s *Storage) PutBook(book *Book) error {
 	const errMsg = "can't put book"
 
 	stmt, err := s.db.Prepare(`
@@ -69,15 +88,18 @@ func (s *Storage) PutBook(book *Book) (int, error) {
     (?, ?, ?, ?, ?);
   `)
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w", errMsg, err)
+		return fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	stmt.QueryRow(book.Id, book.Isbn, book.Title, book.Year, book.Publisher)
+	_, err = stmt.Exec(book.Id, book.Isbn, book.Title, book.Year, book.Publisher)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
 
-	return book.Id, nil
+	return nil
 }
 
-func (s *Storage) DeleteBook(id int) (int, error) {
+func (s *Storage) DeleteBook(id int) error {
 	const errMsg = "can't delete book"
 
 	stmt, err := s.db.Prepare(`
@@ -85,10 +107,13 @@ func (s *Storage) DeleteBook(id int) (int, error) {
     WHERE id = ?;
   `)
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w", errMsg, err)
+		return fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	stmt.QueryRow(id)
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
 
-	return id, nil
+	return nil
 }

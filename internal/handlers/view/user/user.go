@@ -56,8 +56,8 @@ func Get(log *slog.Logger, proto string, host string, port int) http.HandlerFunc
 			return
 		}
 
-		if gr.Status != http.StatusOK {
-			http.Error(w, gr.Error, gr.Status)
+		if response.StatusCode != http.StatusOK {
+			http.Error(w, gr.Error, response.StatusCode)
 			log.Warn(fmt.Sprintf("request to api returned not-ok status"), "response", gr)
 			return
 		}

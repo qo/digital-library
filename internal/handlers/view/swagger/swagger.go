@@ -44,6 +44,6 @@ func Get(log *slog.Logger) http.HandlerFunc {
 			log.Error(msg, "template path", tp, "template", tmpl, "json path", jp, "json", json)
 		}
 
-		log.Info("user view rendered")
+		log.Info("swagger view rendered")
 	}
 }

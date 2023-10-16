@@ -5,8 +5,8 @@ import (
 )
 
 type Authorship struct {
-	AuthorId int
-	BookId   int
+	AuthorId int `json:"author_id"`
+	BookId   int `json:"book_id"`
 }
 
 func (s *Storage) initAuthorships() error {

@@ -5,8 +5,8 @@ import (
 )
 
 type Author struct {
-	Id       int
-	FullName string
+	Id       int    `json:"id"`
+	FullName string `json:"full_name"`
 }
 
 func (s *Storage) initAuthors() error {
@@ -23,6 +23,25 @@ func (s *Storage) initAuthors() error {
 	}
 
 	_, err = stmt.Exec()
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	return nil
+}
+
+func (s *Storage) PostAuthor(author *Author) error {
+	const errMsg = "can't post author"
+
+	stmt, err := s.db.Prepare(`
+    INSERT INTO books(id, full_name)
+    VALUES (?, ?);
+  `)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	_, err = stmt.Exec(author.Id, author.FullName)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
 	}
@@ -53,7 +72,7 @@ func (s *Storage) GetAuthor(id int) (*Author, error) {
 	return &author, nil
 }
 
-func (s *Storage) PutAuthor(author *Author) (int, error) {
+func (s *Storage) PutAuthor(author *Author) error {
 	const errMsg = "can't put author"
 
 	stmt, err := s.db.Prepare(`
@@ -63,15 +82,18 @@ func (s *Storage) PutAuthor(author *Author) (int, error) {
     (?, ?);
   `)
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w", errMsg, err)
+		return fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	stmt.QueryRow(author.Id, author.FullName)
+	_, err = stmt.Exec(author.Id, author.FullName)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
 
-	return author.Id, nil
+	return nil
 }
 
-func (s *Storage) DeleteAuthor(id int) (int, error) {
+func (s *Storage) DeleteAuthor(id int) error {
 	const errMsg = "can't delete author"
 
 	stmt, err := s.db.Prepare(`
@@ -79,10 +101,13 @@ func (s *Storage) DeleteAuthor(id int) (int, error) {
     WHERE id = ?;
   `)
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w", errMsg, err)
+		return fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	stmt.QueryRow(id)
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
 
-	return id, nil
+	return nil
 }
