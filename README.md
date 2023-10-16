@@ -1,3 +1,7 @@
+# WIP
+
+The project is still work in progress.
+
 # Domain
 
 ## Specification
@@ -31,7 +35,7 @@ Admin should be able to:
 
 #### Book file extension
 
-Book file extension should be PDF
+Book file extension should be PDF.
 
 ### Stack
 
@@ -56,13 +60,17 @@ The project tries to follow the guidelines described in [this](https://github.co
 
 Contains commands, including the command for running the server.
 
-## `internal`
-
-Contains code not to be imported by anyone else.
-
 ## `config`
 
 Contains configs.
+
+## `docs`
+
+Contains files that describe the project and are not files.
+
+## `internal`
+
+Contains code not to be imported by anyone else.
 
 # How to use `Makefile`
 
@@ -82,19 +90,23 @@ The options are listed in order of priority:
 
 # How to use REST API
 
-I recommend using `curl`.
+## Using Swagger UI
 
-Send the following requests to manage users:
+After running the app, there will be an endpoint (currently `PROTO://HOST:PORT/api`) that will return an [Swagger UI](https://swagger.io/tools/swagger-ui/) page describing the REST API. Note that not all the endpoints described in the Swagger UI are implemented yet.
 
-`curl -X GET "http://localhost:PORT/user/ID"` - get the user with id of `ID` while server is running on `PORT` port
+## Using `curl`
 
-`curl -X PUT "http://localhost:PORT/user` -H "Content-Type: application/json" -d '{"id": ID, "first_name": FIRST_NAME, "second_name": SECOND_NAME}' - add a user with id of `ID` (value of type int, do not put quotes), first name of `FIRST_NAME` (value of type string, do put quotes), second name of `SECOND_NAME` (value of type string, do put quotes) while server is running on `PORT` port
+Here are some examples of using REST API via `curl`:
 
-`curl -X DELETE "http://localhost:PORT/user/ID"` - delete the user with id of `ID` while server is running on `PORT` port
+`curl -X GET "http://localhost:PORT/user/ID"` - get the user with id of `ID` while server is running on `PORT` port.
+
+`curl -X PUT "http://localhost:PORT/user` -H "Content-Type: application/json" -d '{"id": ID, "first_name": FIRST_NAME, "second_name": SECOND_NAME}' - add a user with id of `ID` (value of type int, do not put quotes), first name of `FIRST_NAME` (value of type string, do put quotes), second name of `SECOND_NAME` (value of type string, do put quotes) while server is running on `PORT` port.
+
+`curl -X DELETE "http://localhost:PORT/user/ID"` - delete the user with id of `ID` while server is running on `PORT` port.
 
 # How to create a database
 
-The instructions are Fedora-specific, but the process itself should be the same on all linux distros
+The instructions are Fedora-specific, but the process itself should be the same on all Linux distros.
 
 ## SQLite
 
