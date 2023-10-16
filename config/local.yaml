@@ -1,7 +1,7 @@
 environment:
   env: "local" # local, dev, prod
 storage:
-  db: "sqlite" # mysql, sqlite
+  db: "mysql" # mysql, sqlite
   mysql_options:
     mysql_name: "digital-library"
     mysql_user: "root"

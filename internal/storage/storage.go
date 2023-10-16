@@ -46,6 +46,16 @@ func Init(options config.StorageOptions) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
+	err = st.initBooks()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	err = st.initUsers()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", errMsg, err)
+	}
+
 	err = st.initAuthorships()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
@@ -56,22 +66,12 @@ func Init(options config.StorageOptions) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	err = st.initBooks()
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", errMsg, err)
-	}
-
 	err = st.initFavoriteAuthors()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
 	err = st.initFavoriteBooks()
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", errMsg, err)
-	}
-
-	err = st.initUsers()
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}

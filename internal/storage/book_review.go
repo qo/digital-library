@@ -16,8 +16,8 @@ func (s *Storage) initBookReviews() error {
     CREATE TABLE IF NOT EXISTS book_reviews(
       user_id INTEGER,
       book_id INTEGER,
-      FOREIGN KEY (user_id) REFERENCES user(id)
-      FOREIGN KEY (book_id) REFERENCES book(id)
+      FOREIGN KEY (user_id) REFERENCES users (id),
+      FOREIGN KEY (book_id) REFERENCES books (id),
       PRIMARY KEY (user_id, book_id)
     );
   `)

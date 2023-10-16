@@ -16,8 +16,8 @@ func (s *Storage) initFavoriteBooks() error {
     CREATE TABLE IF NOT EXISTS favorite_books(
       user_id INTEGER,
       book_id INTEGER,
-      FOREIGN KEY (user_id) REFERENCES user(id)
-      FOREIGN KEY (book_id) REFERENCES book(id)
+      FOREIGN KEY (user_id) REFERENCES users (id),
+      FOREIGN KEY (book_id) REFERENCES books (id),
       PRIMARY KEY (user_id, book_id)
     );
   `)
