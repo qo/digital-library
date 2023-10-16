@@ -7,6 +7,8 @@ import (
 func (r Router) initApiRoutes() {
 	r.initSwaggerViewRoutes()
 	r.initUserApiRoutes()
+	r.initBookApiRoutes()
+	r.initAuthorApiRoutes()
 }
 
 func (r Router) initApiRouter() *Router {

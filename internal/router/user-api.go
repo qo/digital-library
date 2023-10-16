@@ -9,4 +9,5 @@ func (r *Router) initUserApiRoutes() {
 	r.Get("/user/{id}", user.Get(r.logger, r.storage))
 	r.Put("/user", user.Put(r.logger, r.storage))
 	r.Delete("/user/{id}", user.Delete(r.logger, r.storage))
+	r.Get("/user/{id}/books", user.GetFavoriteBooks(r.logger, r.storage))
 }

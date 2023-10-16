@@ -7,6 +7,7 @@ import (
 type BookReview struct {
 	UserId int `json:"user_id"`
 	BookId int `json:"book_id"`
+	Rating int `json:"rating"`
 }
 
 func (s *Storage) initBookReviews() error {
@@ -16,6 +17,7 @@ func (s *Storage) initBookReviews() error {
     CREATE TABLE IF NOT EXISTS book_reviews(
       user_id INTEGER,
       book_id INTEGER,
+      rating INTEGER,
       FOREIGN KEY (user_id) REFERENCES users (id),
       FOREIGN KEY (book_id) REFERENCES books (id),
       PRIMARY KEY (user_id, book_id)

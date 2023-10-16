@@ -16,6 +16,9 @@ type UserStorage interface {
 	GetUser(id int) (*storage.User, error)
 	PutUser(user *storage.User) error
 	DeleteUser(id int) error
+	GetFavoriteBooks(id int) ([]storage.Book, error)
+	GetFavoriteAuthors(id int) ([]storage.Author, error)
+	GetBookReviews(id int) ([]storage.BookReview, error)
 }
 
 type PostRequest = storage.User
@@ -62,10 +65,8 @@ func Post(log *slog.Logger, us UserStorage) http.HandlerFunc {
 }
 
 type GetResponse struct {
-	Error      string `json:"error,omitempty"`
-	Id         int    `json:"id"`
-	FirstName  string `json:"first_name"`
-	SecondName string `json:"second_name"`
+	Error string `json:"error,omitempty"`
+	storage.User
 }
 
 func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
@@ -79,10 +80,7 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			we.Encode(GetResponse{
-				Error:      "user id is not a number",
-				Id:         0,
-				FirstName:  "",
-				SecondName: "",
+				Error: "user id is not a number",
 			})
 			log.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
 			return
@@ -93,10 +91,7 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			we.Encode(GetResponse{
-				Error:      "db error",
-				Id:         0,
-				FirstName:  "",
-				SecondName: "",
+				Error: "db error",
 			})
 			log.Error(fmt.Sprintf("%s: user with %d id doesn't exist: %s", errMsg, id, err))
 			return
@@ -106,10 +101,10 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 
+		// can't mix field:value and value syntax
 		we.Encode(GetResponse{
-			Id:         user.Id,
-			FirstName:  user.FirstName,
-			SecondName: user.SecondName,
+			"",
+			*user,
 		})
 	}
 }
@@ -196,5 +191,46 @@ func Delete(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 
 		we.Encode(DeleteResponse{})
+	}
+}
+
+type GetFavoriteBooksResponse struct {
+	Error string `json:"error,omitempty"`
+	Books []storage.Book
+}
+
+func GetFavoriteBooks(log *slog.Logger, us UserStorage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const errMsg = "can't get favorite books"
+
+		we := json.NewEncoder(w)
+
+		idParam := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			we.Encode(DeleteResponse{
+				Error: "user id is not a number",
+			})
+			log.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
+			return
+		}
+
+		books, err := us.GetFavoriteBooks(id)
+		// TODO: check type of error
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			we.Encode(GetFavoriteBooksResponse{
+				Error: "db error",
+			})
+			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		we.Encode(GetFavoriteBooksResponse{
+			Books: books,
+		})
+		log.Info("favorite books fetched")
 	}
 }

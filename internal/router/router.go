@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/qo/digital-library/internal/handlers/api/author"
+	"github.com/qo/digital-library/internal/handlers/api/book"
 	"github.com/qo/digital-library/internal/handlers/api/user"
 )
 
@@ -19,6 +21,8 @@ type Router struct {
 
 type Storage interface {
 	user.UserStorage
+	book.BookStorage
+	author.AuthorStorage
 }
 
 func (r Router) initRoutes() {

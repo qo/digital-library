@@ -46,6 +46,34 @@ paths:
           description: Internal Server Error # example: storage api returned malformed user
         '503':
           description: Service Unavailable # example: rest api is not working
+    put:
+      tags:
+        - user
+      summary: Update the user
+      description: Update the first, second name and the role of the user with the specified ID
+      operationId: putUser
+      requestBody:
+        description: The updated user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User Updated
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized # example: user is not signed in and tries to update some user
+        '403':
+          description: Forbidden # example: user is signed in and tries to update some other user
+        '404':
+          description: User Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
   /user/{id}:
     get:
       tags:
@@ -69,41 +97,6 @@ paths:
                 $ref: '#/components/schemas/User'
         '400':
           description: Bad Request
-        '404':
-          description: User Not Found
-        '500':
-          description: Internal Server Error
-        '503':
-          description: Service Unavailable
-    put:
-      tags:
-        - user
-      summary: Update the user
-      description: Update the first, second name and the role of the user with the specified ID
-      operationId: putUser
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID of the user to update
-      requestBody:
-        description: The updated user data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: User Updated
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized # example: user is not signed in and tries to update some user
-        '403':
-          description: Forbidden # example: user is signed in and tries to update some other user
         '404':
           description: User Not Found
         '500':
@@ -262,6 +255,34 @@ paths:
           description: Internal Server Error # example: storage api returned malformed book
         '503':
           description: Service Unavailable # example: rest api is not working
+    put:
+      tags:
+        - book
+      summary: Update the book
+      description: Update the ISBN, title, year and publisher of the book with the specified ID
+      operationId: putBook
+      requestBody:
+        description: The updated book data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: Book Updated
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized # example: user is not signed in and tries to update some book
+        '403':
+          description: Forbidden # example: user is signed in and tries to update book he doesn't have a right to update
+        '404':
+          description: Book Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
   /book/{id}:
     get:
       tags:
@@ -285,41 +306,6 @@ paths:
                 $ref: '#/components/schemas/Book'
         '400':
           description: Bad Request
-        '404':
-          description: Book Not Found
-        '500':
-          description: Internal Server Error
-        '503':
-          description: Service Unavailable
-    put:
-      tags:
-        - book
-      summary: Update the book
-      description: Update the ISBN, title, year and publisher of the book with the specified ID
-      operationId: putBook
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID of the book to update
-      requestBody:
-        description: The updated book data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Book'
-      responses:
-        '200':
-          description: Book Updated
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized # example: user is not signed in and tries to update some book
-        '403':
-          description: Forbidden # example: user is signed in and tries to update book he doesn't have a right to update
         '404':
           description: Book Not Found
         '500':
@@ -478,6 +464,34 @@ paths:
           description: Internal Server Error # example: storage api returned malformed author
         '503':
           description: Service Unavailable # example: rest api is not working
+    put:
+      tags:
+        - author
+      summary: Update the author
+      description: Update the full name of the author with the specified ID
+      operationId: putAuthor
+      requestBody:
+        description: The updated author data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      responses:
+        '200':
+          description: Author Updated
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized # example: user is not signed in
+        '403':
+          description: Forbidden # example: user is signed in and tries to update author he doesn't have a right to update
+        '404':
+          description: Author Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
   /author/{id}:
     get:
       tags:
@@ -501,41 +515,6 @@ paths:
                 $ref: '#/components/schemas/Author'
         '400':
           description: Bad Request
-        '404':
-          description: Author Not Found
-        '500':
-          description: Internal Server Error
-        '503':
-          description: Service Unavailable
-    put:
-      tags:
-        - author
-      summary: Update the author
-      description: Update the full name of the author with the specified ID
-      operationId: putAuthor
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID of the author to update
-      requestBody:
-        description: The updated author data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Author'
-      responses:
-        '200':
-          description: Author Updated
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized # example: user is not signed in
-        '403':
-          description: Forbidden # example: user is signed in and tries to update author he doesn't have a right to update
         '404':
           description: Author Not Found
         '500':

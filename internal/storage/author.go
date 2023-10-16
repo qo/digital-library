@@ -34,8 +34,10 @@ func (s *Storage) PostAuthor(author *Author) error {
 	const errMsg = "can't post author"
 
 	stmt, err := s.db.Prepare(`
-    INSERT INTO books(id, full_name)
-    VALUES (?, ?);
+    INSERT INTO books
+    (id, full_name)
+    VALUES 
+    (?, ?);
   `)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
@@ -76,16 +78,15 @@ func (s *Storage) PutAuthor(author *Author) error {
 	const errMsg = "can't put author"
 
 	stmt, err := s.db.Prepare(`
-    INSERT INTO authors
-    (id, full_name)
-    VALUES
-    (?, ?);
+    UPDATE authors
+    SET full_name = ?
+    WHERE id = ?;
   `)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	_, err = stmt.Exec(author.Id, author.FullName)
+	_, err = stmt.Exec(author.FullName, author.Id)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
 	}

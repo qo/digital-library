@@ -40,8 +40,10 @@ func (s *Storage) PostBook(book *Book) error {
 	const errMsg = "can't post book"
 
 	stmt, err := s.db.Prepare(`
-    INSERT INTO books(id, isbn, title, year, publisher)
-    VALUES (?, ?, ?, ?, ?);
+    INSERT INTO books
+    (id, isbn, title, year, publisher)
+    VALUES
+    (?, ?, ?, ?, ?);
   `)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
@@ -82,16 +84,15 @@ func (s *Storage) PutBook(book *Book) error {
 	const errMsg = "can't put book"
 
 	stmt, err := s.db.Prepare(`
-    INSERT INTO books
-    (id, isbn, title, year, publisher)
-    VALUES
-    (?, ?, ?, ?, ?);
+    UPDATE books
+    SET isbn = ?, title = ?, year = ?, publisher = ?
+    WHERE id = ?;
   `)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	_, err = stmt.Exec(book.Id, book.Isbn, book.Title, book.Year, book.Publisher)
+	_, err = stmt.Exec(book.Isbn, book.Title, book.Year, book.Publisher, book.Id)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errMsg, err)
 	}
