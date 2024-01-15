@@ -3,70 +3,82 @@ package book
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/qo/digital-library/internal/storage"
+	"github.com/qo/digital-library/internal/logger"
+	"github.com/qo/digital-library/internal/storage/book"
 )
 
-type BookStorage interface {
-	PostBook(*storage.Book) error
-	GetBook(id int) (*storage.Book, error)
-	PutBook(book *storage.Book) error
+type bookStorage interface {
+	PostBook(*book.Book) error
+	GetBook(id int) (*book.Book, error)
+	PutBook(book *book.Book) error
 	DeleteBook(id int) error
 }
 
-type PostRequest = storage.Book
+type bookHandler struct {
+	logger.Logger
+	bookStorage
+}
 
-type PostResponse struct {
+func New(log logger.Logger, bs bookStorage) *bookHandler {
+	return &bookHandler{
+		log,
+		bs,
+	}
+}
+
+type postRequest = book.Book
+
+type postResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Post(log *slog.Logger, bs BookStorage) http.HandlerFunc {
+func (bh *bookHandler) Post() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't post book"
 
 		rd, we := json.NewDecoder(r.Body), json.NewEncoder(w)
 
-		var req PostRequest
+		var req postRequest
 
 		err := rd.Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(PostResponse{
+			we.Encode(postResponse{
 				Error: "invalid request",
 			})
-			log.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
+			bh.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
 			return
 		}
 
-		err = bs.PostBook(&req)
+		err = bh.PostBook(&req)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(PostResponse{
+			we.Encode(postResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			bh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("post book success")
+		bh.Debug("post book success")
 
 		w.WriteHeader(http.StatusCreated)
 
-		we.Encode(PostResponse{})
+		we.Encode(postResponse{})
 	}
 }
 
-type GetResponse struct {
+type getResponse struct {
 	Error string `json:"error,omitempty"`
-	storage.Book
+	book.Book
 }
 
-func Get(log *slog.Logger, bs BookStorage) http.HandlerFunc {
+func (bh *bookHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't get book"
 
@@ -76,85 +88,85 @@ func Get(log *slog.Logger, bs BookStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(GetResponse{
+			we.Encode(getResponse{
 				Error: "book id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: book id is not a number: %s", errMsg, err))
+			bh.Error(fmt.Sprintf("%s: book id is not a number: %s", errMsg, err))
 			return
 		}
 
-		book, err := bs.GetBook(id)
+		book, err := bh.GetBook(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(GetResponse{
+			we.Encode(getResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: book with %d id doesn't exist: %s", errMsg, id, err))
+			bh.Error(fmt.Sprintf("%s: book with %d id doesn't exist: %s", errMsg, id, err))
 			return
 		}
 
-		log.Debug("get book success", "book", book)
+		bh.Debug("get book success", "book", book)
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(GetResponse{
+		we.Encode(getResponse{
 			"",
 			*book,
 		})
 	}
 }
 
-type PutRequest = storage.Book
+type putRequest = book.Book
 
-type PutResponse struct {
+type putResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Put(log *slog.Logger, bs BookStorage) http.HandlerFunc {
+func (bh *bookHandler) Put() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't put book"
 
 		rd, we := json.NewDecoder(r.Body), json.NewEncoder(w)
 
-		var req PutRequest
+		var req putRequest
 
 		err := rd.Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(PutResponse{
+			we.Encode(putResponse{
 				Error: "invalid request",
 			})
-			log.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
+			bh.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
 			return
 		}
 
-		log.Debug("request parsed", "req", req)
+		bh.Debug("request parsed", "req", req)
 
-		err = bs.PutBook(&req)
+		err = bh.PutBook(&req)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(PutResponse{
+			we.Encode(putResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			bh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("put book success")
+		bh.Debug("put book success")
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(PutResponse{})
+		we.Encode(putResponse{})
 	}
 }
 
-type DeleteResponse struct {
+type deleteResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Delete(log *slog.Logger, bs BookStorage) http.HandlerFunc {
+func (bh *bookHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't delete book"
 
@@ -164,28 +176,28 @@ func Delete(log *slog.Logger, bs BookStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "book id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: book id is not a number: %s", errMsg, err))
+			bh.Error(fmt.Sprintf("%s: book id is not a number: %s", errMsg, err))
 			return
 		}
 
-		err = bs.DeleteBook(id)
+		err = bh.DeleteBook(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			bh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("delete book success")
+		bh.Debug("delete book success")
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(DeleteResponse{})
+		we.Encode(deleteResponse{})
 	}
 }

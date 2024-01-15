@@ -1,6 +1,7 @@
-package storage
+package favorite_author
 
 import (
+	"database/sql"
 	"fmt"
 )
 
@@ -9,10 +10,10 @@ type FavoriteAuthor struct {
 	AuthorId int `json:"author_id"`
 }
 
-func (s *Storage) initFavoriteAuthors() error {
+func InitTable(db *sql.DB) error {
 	const errMsg = "can't init favorite authors table"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     CREATE TABLE IF NOT EXISTS favorite_authors(
       user_id INTEGER,
       author_id INTEGER,
@@ -33,10 +34,10 @@ func (s *Storage) initFavoriteAuthors() error {
 	return nil
 }
 
-func (s *Storage) GetFavoriteAuthor(userId, authorId int) (*FavoriteAuthor, error) {
+func GetFavoriteAuthor(db *sql.DB, userId, authorId int) (*FavoriteAuthor, error) {
 	const errMsg = "can't get favorite author"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM favorite_authors
     WHERE user_id = ?
     AND author_id = ?
@@ -57,10 +58,10 @@ func (s *Storage) GetFavoriteAuthor(userId, authorId int) (*FavoriteAuthor, erro
 	return &favoriteAuthor, nil
 }
 
-func (s *Storage) PutFavoriteAuthor(favoriteAuthor *FavoriteAuthor) (int, int, error) {
+func PutFavoriteAuthor(db *sql.DB, favoriteAuthor *FavoriteAuthor) (int, int, error) {
 	const errMsg = "can't put favorite author"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     INSERT INTO favorite_authors
     (user_id, author_id)
     VALUES
@@ -75,10 +76,10 @@ func (s *Storage) PutFavoriteAuthor(favoriteAuthor *FavoriteAuthor) (int, int, e
 	return favoriteAuthor.UserId, favoriteAuthor.AuthorId, nil
 }
 
-func (s *Storage) DeleteFavoriteAuthor(userId, authorId int) (int, int, error) {
+func DeleteFavoriteAuthor(db *sql.DB, userId, authorId int) (int, int, error) {
 	const errMsg = "can't delete favorite author"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     DELETE FROM favorite_authors
     WHERE user_id = ?
     AND author_id = ?

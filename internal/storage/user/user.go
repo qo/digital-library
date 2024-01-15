@@ -1,7 +1,12 @@
-package storage
+package user
 
 import (
+	"database/sql"
 	"fmt"
+
+	"github.com/qo/digital-library/internal/storage/author"
+	"github.com/qo/digital-library/internal/storage/book"
+	"github.com/qo/digital-library/internal/storage/book_review"
 )
 
 type User struct {
@@ -11,10 +16,10 @@ type User struct {
 	Role       int    `json:"role"` // 1 - user, 2 - mod, 3 - admin
 }
 
-func (s *Storage) initUsers() error {
+func InitTable(db *sql.DB) error {
 	const errMsg = "can't init users table"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     CREATE TABLE IF NOT EXISTS users(
       id INTEGER PRIMARY KEY,
       first_name TEXT,
@@ -34,10 +39,10 @@ func (s *Storage) initUsers() error {
 	return nil
 }
 
-func (s *Storage) PostUser(user *User) error {
+func PostUser(db *sql.DB, user *User) error {
 	const errMsg = "can't post user"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     INSERT INTO users
     (id, first_name, second_name, role)
     VALUES 
@@ -55,10 +60,10 @@ func (s *Storage) PostUser(user *User) error {
 	return nil
 }
 
-func (s *Storage) GetUser(id int) (*User, error) {
+func GetUser(db *sql.DB, id int) (*User, error) {
 	const errMsg = "can't get user"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM users
     WHERE id = ?;
   `)
@@ -78,10 +83,10 @@ func (s *Storage) GetUser(id int) (*User, error) {
 	return &user, nil
 }
 
-func (s *Storage) PutUser(user *User) error {
+func PutUser(db *sql.DB, user *User) error {
 	const errMsg = "can't put user"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     UPDATE users
     SET first_name = ?, second_name = ?, role = ?
     WHERE id = ?;
@@ -98,10 +103,10 @@ func (s *Storage) PutUser(user *User) error {
 	return nil
 }
 
-func (s *Storage) DeleteUser(id int) error {
+func DeleteUser(db *sql.DB, id int) error {
 	const errMsg = "can't delete user"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     DELETE FROM users
     WHERE id = ?;
   `)
@@ -117,10 +122,10 @@ func (s *Storage) DeleteUser(id int) error {
 	return nil
 }
 
-func (s *Storage) GetFavoriteBooks(id int) ([]Book, error) {
+func GetFavoriteBooks(db *sql.DB, id int) ([]book.Book, error) {
 	const errMsg = "can't get favorite books"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT b.* FROM favorite_books AS fb
     JOIN books AS b
     ON fb.book_id = b.id
@@ -135,10 +140,10 @@ func (s *Storage) GetFavoriteBooks(id int) ([]Book, error) {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	books := make([]Book, 0)
+	books := make([]book.Book, 0)
 
 	for rows.Next() {
-		var book Book
+		var book book.Book
 		err := rows.Scan(&book.Id, &book.Isbn, &book.Title, &book.Year, &book.Publisher)
 		if err != nil {
 			return nil, fmt.Errorf("%s: can't scan book: %s", errMsg, err)
@@ -154,10 +159,10 @@ func (s *Storage) GetFavoriteBooks(id int) ([]Book, error) {
 	return books, nil
 }
 
-func (s *Storage) GetFavoriteAuthors(id int) ([]Author, error) {
+func GetFavoriteAuthors(db *sql.DB, id int) ([]author.Author, error) {
 	const errMsg = "can't get favorite authors"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM favorite_authors
     JOIN authors
     ON favorite_authors.author_id = authors.id
@@ -172,10 +177,10 @@ func (s *Storage) GetFavoriteAuthors(id int) ([]Author, error) {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	authors := make([]Author, 0)
+	authors := make([]author.Author, 0)
 
 	for rows.Next() {
-		var author Author
+		var author author.Author
 		err := rows.Scan(&author.Id, &author.FullName)
 		if err != nil {
 			return nil, fmt.Errorf("%s: can't scan author: %s", errMsg, err)
@@ -191,10 +196,10 @@ func (s *Storage) GetFavoriteAuthors(id int) ([]Author, error) {
 	return authors, nil
 }
 
-func (s *Storage) GetBookReviews(id int) ([]BookReview, error) {
+func GetBookReviews(db *sql.DB, id int) ([]book_review.BookReview, error) {
 	const errMsg = "can't get book reviews"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM book_reviews
     WHERE user_id = ?;
   `)
@@ -207,10 +212,10 @@ func (s *Storage) GetBookReviews(id int) ([]BookReview, error) {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	reviews := make([]BookReview, 0)
+	reviews := make([]book_review.BookReview, 0)
 
 	for rows.Next() {
-		var review BookReview
+		var review book_review.BookReview
 		err := rows.Scan(&review.UserId, &review.BookId, &review.Rating)
 		if err != nil {
 			return nil, fmt.Errorf("%s: can't scan book review: %s", errMsg, err)

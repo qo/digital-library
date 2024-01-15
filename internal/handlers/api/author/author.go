@@ -3,70 +3,82 @@ package author
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/qo/digital-library/internal/storage"
+	"github.com/qo/digital-library/internal/logger"
+	"github.com/qo/digital-library/internal/storage/author"
 )
 
-type AuthorStorage interface {
-	PostAuthor(*storage.Author) error
-	GetAuthor(id int) (*storage.Author, error)
-	PutAuthor(author *storage.Author) error
+type authorStorage interface {
+	GetAuthor(id int) (*author.Author, error)
+	PostAuthor(*author.Author) error
+	PutAuthor(author *author.Author) error
 	DeleteAuthor(id int) error
 }
 
-type PostRequest = storage.Author
+type authorHandler struct {
+	logger.Logger
+	authorStorage
+}
 
-type PostResponse struct {
+func New(log logger.Logger, as authorStorage) *authorHandler {
+	return &authorHandler{
+		log,
+		as,
+	}
+}
+
+type postRequest = author.Author
+
+type postResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Post(log *slog.Logger, as AuthorStorage) http.HandlerFunc {
+func (ah authorHandler) Post() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't post author"
 
 		rd, we := json.NewDecoder(r.Body), json.NewEncoder(w)
 
-		var req PostRequest
+		var req postRequest
 
 		err := rd.Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(PostResponse{
+			we.Encode(postResponse{
 				Error: "invalid request",
 			})
-			log.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
+			ah.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
 			return
 		}
 
-		err = as.PostAuthor(&req)
+		err = ah.PostAuthor(&req)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(PostResponse{
+			we.Encode(postResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			ah.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("post author success")
+		ah.Debug("post author success")
 
 		w.WriteHeader(http.StatusCreated)
 
-		we.Encode(PostResponse{})
+		we.Encode(postResponse{})
 	}
 }
 
-type GetResponse struct {
+type getResponse struct {
 	Error string `json:"error,omitempty"`
-	storage.Author
+	author.Author
 }
 
-func Get(log *slog.Logger, as AuthorStorage) http.HandlerFunc {
+func (ah authorHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't get author"
 
@@ -76,85 +88,85 @@ func Get(log *slog.Logger, as AuthorStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(GetResponse{
+			we.Encode(getResponse{
 				Error: "author id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: author id is not a number: %s", errMsg, err))
+			ah.Error(fmt.Sprintf("%s: author id is not a number: %s", errMsg, err))
 			return
 		}
 
-		author, err := as.GetAuthor(id)
+		author, err := ah.GetAuthor(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(GetResponse{
+			we.Encode(getResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: author with %d id doesn't exist: %s", errMsg, id, err))
+			ah.Error(fmt.Sprintf("%s: author with %d id doesn't exist: %s", errMsg, id, err))
 			return
 		}
 
-		log.Debug("get author success", "author", author)
+		ah.Debug("get author success", "author", author)
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(GetResponse{
+		we.Encode(getResponse{
 			"",
 			*author,
 		})
 	}
 }
 
-type PutRequest = storage.Author
+type putRequest = author.Author
 
-type PutResponse struct {
+type putResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Put(log *slog.Logger, as AuthorStorage) http.HandlerFunc {
+func (ah authorHandler) Put() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't put author"
 
 		rd, we := json.NewDecoder(r.Body), json.NewEncoder(w)
 
-		var req PutRequest
+		var req putRequest
 
 		err := rd.Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(PutResponse{
+			we.Encode(putResponse{
 				Error: "invalid request",
 			})
-			log.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
+			ah.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
 			return
 		}
 
-		log.Debug("request parsed", "req", req)
+		ah.Debug("request parsed", "req", req)
 
-		err = as.PutAuthor(&req)
+		err = ah.PutAuthor(&req)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(PutResponse{
+			we.Encode(putResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			ah.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("put author success")
+		ah.Debug("put author success")
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(PutResponse{})
+		we.Encode(putResponse{})
 	}
 }
 
-type DeleteResponse struct {
+type deleteResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Delete(log *slog.Logger, as AuthorStorage) http.HandlerFunc {
+func (ah authorHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't delete author"
 
@@ -164,28 +176,28 @@ func Delete(log *slog.Logger, as AuthorStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "author id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: author id is not a number: %s", errMsg, err))
+			ah.Error(fmt.Sprintf("%s: author id is not a number: %s", errMsg, err))
 			return
 		}
 
-		err = as.DeleteAuthor(id)
+		err = ah.DeleteAuthor(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			ah.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("delete author success")
+		ah.Debug("delete author success")
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(DeleteResponse{})
+		we.Encode(deleteResponse{})
 	}
 }

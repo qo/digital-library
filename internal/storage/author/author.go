@@ -1,6 +1,7 @@
-package storage
+package author
 
 import (
+	"database/sql"
 	"fmt"
 )
 
@@ -9,10 +10,10 @@ type Author struct {
 	FullName string `json:"full_name"`
 }
 
-func (s *Storage) initAuthors() error {
+func InitTable(db *sql.DB) error {
 	const errMsg = "can't init authors table"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     CREATE TABLE IF NOT EXISTS authors(
       id INTEGER PRIMARY KEY,
       full_name TEXT
@@ -30,31 +31,10 @@ func (s *Storage) initAuthors() error {
 	return nil
 }
 
-func (s *Storage) PostAuthor(author *Author) error {
-	const errMsg = "can't post author"
-
-	stmt, err := s.db.Prepare(`
-    INSERT INTO books
-    (id, full_name)
-    VALUES 
-    (?, ?);
-  `)
-	if err != nil {
-		return fmt.Errorf("%s: %w", errMsg, err)
-	}
-
-	_, err = stmt.Exec(author.Id, author.FullName)
-	if err != nil {
-		return fmt.Errorf("%s: %w", errMsg, err)
-	}
-
-	return nil
-}
-
-func (s *Storage) GetAuthor(id int) (*Author, error) {
+func GetAuthor(db *sql.DB, id int) (*Author, error) {
 	const errMsg = "can't get author"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM authors
     WHERE id = ?;
   `)
@@ -74,10 +54,31 @@ func (s *Storage) GetAuthor(id int) (*Author, error) {
 	return &author, nil
 }
 
-func (s *Storage) PutAuthor(author *Author) error {
+func PostAuthor(db *sql.DB, author *Author) error {
+	const errMsg = "can't post author"
+
+	stmt, err := db.Prepare(`
+    INSERT INTO books
+    (id, full_name)
+    VALUES 
+    (?, ?);
+  `)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	_, err = stmt.Exec(author.Id, author.FullName)
+	if err != nil {
+		return fmt.Errorf("%s: %w", errMsg, err)
+	}
+
+	return nil
+}
+
+func PutAuthor(db *sql.DB, author *Author) error {
 	const errMsg = "can't put author"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     UPDATE authors
     SET full_name = ?
     WHERE id = ?;
@@ -94,10 +95,10 @@ func (s *Storage) PutAuthor(author *Author) error {
 	return nil
 }
 
-func (s *Storage) DeleteAuthor(id int) error {
+func DeleteAuthor(db *sql.DB, id int) error {
 	const errMsg = "can't delete author"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     DELETE FROM authors
     WHERE id = ?;
   `)

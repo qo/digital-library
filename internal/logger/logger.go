@@ -12,7 +12,11 @@ const (
 	envProd  = "prod"
 )
 
-func Init(env string) (*slog.Logger, error) {
+type Logger struct {
+	*slog.Logger
+}
+
+func Init(env string) (*Logger, error) {
 	const errMsg = "can't init logger"
 
 	var logger *slog.Logger
@@ -54,5 +58,5 @@ func Init(env string) (*slog.Logger, error) {
 
 	}
 
-	return logger, nil
+	return &Logger{logger}, nil
 }

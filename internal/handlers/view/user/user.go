@@ -5,20 +5,37 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log/slog"
 	"net/http"
 	"path"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/qo/digital-library/internal/handlers/api/user"
+	user_handler "github.com/qo/digital-library/internal/handlers/api/user"
+	"github.com/qo/digital-library/internal/logger"
+	user_storage "github.com/qo/digital-library/internal/storage/user"
 )
 
 const (
 	internalServerErrorCode = http.StatusInternalServerError
 )
 
-func Get(log *slog.Logger, proto string, host string, port int) http.HandlerFunc {
+type userStorage interface {
+	GetUser(id int) (*user_storage.User, error)
+}
+
+type userHandler struct {
+	logger.Logger
+	userStorage
+}
+
+func NewUserHandler(log logger.Logger, st userStorage) *userHandler {
+	return &userHandler{
+		log,
+		st,
+	}
+}
+
+func (uh *userHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't get user"
 
@@ -27,15 +44,15 @@ func Get(log *slog.Logger, proto string, host string, port int) http.HandlerFunc
 		if err != nil {
 			const msg = "user id is not a number"
 			http.Error(w, msg, internalServerErrorCode)
-			log.Warn(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
+			uh.Warn(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
 			return
 		}
 
-		response, err := http.Get(fmt.Sprintf("%s://%s:%d/api/user/%d", proto, host, port, id))
+		response, err := user_handler.New(uh.Logger, uh.userStorage).GetUser(id)
 		if err != nil {
 			const msg = "get request to api failed"
 			http.Error(w, msg, internalServerErrorCode)
-			log.Warn(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
+			uh.Warn(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
 			return
 		}
 

@@ -3,73 +3,88 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/qo/digital-library/internal/storage"
+	"github.com/qo/digital-library/internal/logger"
+	"github.com/qo/digital-library/internal/storage/author"
+	"github.com/qo/digital-library/internal/storage/book"
+	"github.com/qo/digital-library/internal/storage/book_review"
+	"github.com/qo/digital-library/internal/storage/user"
 )
 
-type UserStorage interface {
-	PostUser(*storage.User) error
-	GetUser(id int) (*storage.User, error)
-	PutUser(user *storage.User) error
+type userStorage interface {
+	PostUser(*user.User) error
+	GetUser(id int) (*user.User, error)
+	PutUser(user *user.User) error
 	DeleteUser(id int) error
-	GetFavoriteBooks(id int) ([]storage.Book, error)
-	GetFavoriteAuthors(id int) ([]storage.Author, error)
-	GetBookReviews(id int) ([]storage.BookReview, error)
+	GetUserFavoriteBooks(id int) ([]book.Book, error)
+	GetUserFavoriteAuthors(id int) ([]author.Author, error)
+	GetUserBookReviews(id int) ([]book_review.BookReview, error)
 }
 
-type PostRequest = storage.User
+type userHandler struct {
+	logger.Logger
+	userStorage
+}
 
-type PostResponse struct {
+func New(log logger.Logger, us userStorage) *userHandler {
+	return &userHandler{
+		log,
+		us,
+	}
+}
+
+type postRequest = user.User
+
+type postResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Post(log *slog.Logger, us UserStorage) http.HandlerFunc {
+func (uh *userHandler) Post() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't post user"
 
 		rd, we := json.NewDecoder(r.Body), json.NewEncoder(w)
 
-		var req PostRequest
+		var req postRequest
 
 		err := rd.Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(PostResponse{
+			we.Encode(postResponse{
 				Error: "invalid request",
 			})
-			log.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
+			uh.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
 			return
 		}
 
-		err = us.PostUser(&req)
+		err = uh.PostUser(&req)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(PostResponse{
+			we.Encode(postResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("post user success")
+		uh.Debug("post user success")
 
 		w.WriteHeader(http.StatusCreated)
 
-		we.Encode(PostResponse{})
+		we.Encode(postResponse{})
 	}
 }
 
-type GetResponse struct {
+type getResponse struct {
 	Error string `json:"error,omitempty"`
-	storage.User
+	user.User
 }
 
-func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
+func (uh *userHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't get user"
 
@@ -79,86 +94,86 @@ func Get(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(GetResponse{
+			we.Encode(getResponse{
 				Error: "user id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
 			return
 		}
 
-		user, err := us.GetUser(id)
+		user, err := uh.GetUser(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(GetResponse{
+			we.Encode(getResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: user with %d id doesn't exist: %s", errMsg, id, err))
+			uh.Error(fmt.Sprintf("%s: user with %d id doesn't exist: %s", errMsg, id, err))
 			return
 		}
 
-		log.Debug("get user success", "user", user)
+		uh.Debug("get user success", "user", user)
 
 		w.WriteHeader(http.StatusOK)
 
 		// can't mix field:value and value syntax
-		we.Encode(GetResponse{
+		we.Encode(getResponse{
 			"",
 			*user,
 		})
 	}
 }
 
-type PutRequest = storage.User
+type putRequest = user.User
 
-type PutResponse struct {
+type putResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Put(log *slog.Logger, us UserStorage) http.HandlerFunc {
+func (uh *userHandler) Put() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't put user"
 
 		rd, we := json.NewDecoder(r.Body), json.NewEncoder(w)
 
-		var req PutRequest
+		var req putRequest
 
 		err := rd.Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(PutResponse{
+			we.Encode(putResponse{
 				Error: "invalid request",
 			})
-			log.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
+			uh.Error(fmt.Sprintf("%s: request not parsed: %s", errMsg, err), "req", req)
 			return
 		}
 
-		log.Debug("request parsed", "req", req)
+		uh.Debug("request parsed", "req", req)
 
-		err = us.PutUser(&req)
+		err = uh.PutUser(&req)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(PutResponse{
+			we.Encode(putResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("put user success")
+		uh.Debug("put user success")
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(PutResponse{})
+		we.Encode(putResponse{})
 	}
 }
 
-type DeleteResponse struct {
+type deleteResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func Delete(log *slog.Logger, us UserStorage) http.HandlerFunc {
+func (uh *userHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't delete user"
 
@@ -168,38 +183,38 @@ func Delete(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "user id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
 			return
 		}
 
-		err = us.DeleteUser(id)
+		err = uh.DeleteUser(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
-		log.Debug("delete user success")
+		uh.Debug("delete user success")
 
 		w.WriteHeader(http.StatusOK)
 
-		we.Encode(DeleteResponse{})
+		we.Encode(deleteResponse{})
 	}
 }
 
-type GetFavoriteBooksResponse struct {
+type getFavoriteBooksResponse struct {
 	Error string `json:"error,omitempty"`
-	Books []storage.Book
+	Books []book.Book
 }
 
-func GetFavoriteBooks(log *slog.Logger, us UserStorage) http.HandlerFunc {
+func (uh *userHandler) GetFavoriteBooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't get favorite books"
 
@@ -209,28 +224,28 @@ func GetFavoriteBooks(log *slog.Logger, us UserStorage) http.HandlerFunc {
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			we.Encode(DeleteResponse{
+			we.Encode(deleteResponse{
 				Error: "user id is not a number",
 			})
-			log.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: user id is not a number: %s", errMsg, err))
 			return
 		}
 
-		books, err := us.GetFavoriteBooks(id)
+		books, err := uh.GetUserFavoriteBooks(id)
 		// TODO: check type of error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			we.Encode(GetFavoriteBooksResponse{
+			we.Encode(getFavoriteBooksResponse{
 				Error: "db error",
 			})
-			log.Error(fmt.Sprintf("%s: %s", errMsg, err))
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, err))
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
-		we.Encode(GetFavoriteBooksResponse{
+		we.Encode(getFavoriteBooksResponse{
 			Books: books,
 		})
-		log.Info("favorite books fetched")
+		uh.Info("favorite books fetched")
 	}
 }

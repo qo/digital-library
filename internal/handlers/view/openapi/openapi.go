@@ -1,9 +1,9 @@
-package swagger
+package openapi
 
 import (
 	"fmt"
+	"github.com/qo/digital-library/internal/logger"
 	"html/template"
-	"log/slog"
 	"net/http"
 	"os"
 	"path"
@@ -13,7 +13,15 @@ const (
 	internalServerErrorCode = http.StatusInternalServerError
 )
 
-func Get(log *slog.Logger) http.HandlerFunc {
+type openapiHandler struct {
+	logger.Logger
+}
+
+type openapiHandler struct {
+	logger.Logger
+}
+
+func (oh openapiHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const errMsg = "can't get swagger"
 
@@ -23,7 +31,7 @@ func Get(log *slog.Logger) http.HandlerFunc {
 		if err != nil {
 			msg := fmt.Sprintf("%s: can't parse html template: %s", errMsg, err)
 			http.Error(w, msg, internalServerErrorCode)
-			log.Error(msg, "template path", tp)
+			oh.Error(msg, "template path", tp)
 			return
 		}
 
@@ -33,7 +41,7 @@ func Get(log *slog.Logger) http.HandlerFunc {
 		if err != nil {
 			msg := fmt.Sprintf("%s: can't read json file containing swagger spec: %s", errMsg, err)
 			http.Error(w, msg, internalServerErrorCode)
-			log.Error(msg, "json path", jp)
+			oh.Error(msg, "json path", jp)
 			return
 		}
 
@@ -41,9 +49,9 @@ func Get(log *slog.Logger) http.HandlerFunc {
 		if err != nil {
 			msg := fmt.Sprintf("%s: can't execute html template: %s", errMsg, err)
 			http.Error(w, msg, internalServerErrorCode)
-			log.Error(msg, "template path", tp, "template", tmpl, "json path", jp, "json", json)
+			oh.Error(msg, "template path", tp, "template", tmpl, "json path", jp, "json", json)
 		}
 
-		log.Info("swagger view rendered")
+		oh.Info("swagger view rendered")
 	}
 }

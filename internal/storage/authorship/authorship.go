@@ -1,6 +1,7 @@
-package storage
+package authorship
 
 import (
+	"database/sql"
 	"fmt"
 )
 
@@ -9,10 +10,10 @@ type Authorship struct {
 	BookId   int `json:"book_id"`
 }
 
-func (s *Storage) initAuthorships() error {
+func InitTable(db *sql.DB) error {
 	const errMsg = "can't init authorships table"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     CREATE TABLE IF NOT EXISTS authorships(
       author_id INTEGER,
       book_id INTEGER,
@@ -33,10 +34,10 @@ func (s *Storage) initAuthorships() error {
 	return nil
 }
 
-func (s *Storage) GetAuthorship(authorId, bookId int) (*Authorship, error) {
+func GetAuthorship(db *sql.DB, authorId, bookId int) (*Authorship, error) {
 	const errMsg = "can't get authorship"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM authorships
     WHERE author_id = ?
     AND book_id = ?
@@ -47,20 +48,20 @@ func (s *Storage) GetAuthorship(authorId, bookId int) (*Authorship, error) {
 
 	row := stmt.QueryRow(authorId, bookId)
 
-	var bookReview Authorship
+	var authorship Authorship
 
-	err = row.Scan(&bookReview.AuthorId, &bookReview.BookId)
+	err = row.Scan(&authorship.AuthorId, &authorship.BookId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	return &bookReview, nil
+	return &authorship, nil
 }
 
-func (s *Storage) PutAuthorship(bookReview *Authorship) (int, int, error) {
+func PostAuthorship(db *sql.DB, authorship *Authorship) (int, int, error) {
 	const errMsg = "can't put authorship"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     INSERT INTO authorships
     (author_id, book_id)
     VALUES
@@ -70,15 +71,15 @@ func (s *Storage) PutAuthorship(bookReview *Authorship) (int, int, error) {
 		return 0, 0, fmt.Errorf("%s: %w", errMsg, err)
 	}
 
-	stmt.QueryRow(bookReview.AuthorId, bookReview.BookId)
+	stmt.QueryRow(authorship.AuthorId, authorship.BookId)
 
-	return bookReview.AuthorId, bookReview.BookId, nil
+	return authorship.AuthorId, authorship.BookId, nil
 }
 
-func (s *Storage) DeleteAuthorship(authorId, bookId int) (int, int, error) {
+func DeleteAuthorship(db *sql.DB, authorId, bookId int) (int, int, error) {
 	const errMsg = "can't delete authorship"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     DELETE FROM authorships
     WHERE author_id = ?
     AND book_id = ?

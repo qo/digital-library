@@ -6,6 +6,9 @@ import (
 	"net/http"
 
 	"github.com/qo/digital-library/internal/config"
+	"github.com/qo/digital-library/internal/handlers/api/author"
+	"github.com/qo/digital-library/internal/handlers/api/book"
+	"github.com/qo/digital-library/internal/handlers/api/user"
 	"github.com/qo/digital-library/internal/logger"
 	"github.com/qo/digital-library/internal/router"
 	"github.com/qo/digital-library/internal/storage"
@@ -43,7 +46,7 @@ func main() {
 
 	log.Info("storage loaded")
 
-	router := router.Init(log, s, cfg.Proto, cfg.Host, cfg.Port)
+	router := router.New(log, s)
 
 	log.Info("router started")
 

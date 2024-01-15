@@ -1,38 +1,24 @@
 package router
 
 import (
-	"log/slog"
-
 	"github.com/go-chi/chi/v5"
-
-	"github.com/qo/digital-library/internal/handlers/api/author"
-	"github.com/qo/digital-library/internal/handlers/api/book"
-	"github.com/qo/digital-library/internal/handlers/api/user"
+	"github.com/qo/digital-library/internal/router/api"
+	"github.com/qo/digital-library/internal/router/views"
+	"github.com/qo/digital-library/internal/storage"
 )
 
 type Router struct {
-	logger  *slog.Logger
-	storage Storage
 	chi.Router
-	proto string
-	host  string
-	port  int
 }
 
-type Storage interface {
-	user.UserStorage
-	book.BookStorage
-	author.AuthorStorage
-}
-
-func (r Router) initRoutes() {
-	r.Mount("/api", r.initApiRouter())
-	r.Mount("/", r.initViewRouter())
-}
-
-func Init(log *slog.Logger, s Storage, proto string, host string, port int) *Router {
+func New(log logger.Logger, st storage.Storage) *Router {
 	cr := chi.NewRouter()
-	r := Router{log, s, cr, proto, host, port}
-	r.initRoutes()
+	r := Router{cr}
+	r.mountRoutes(log, st)
 	return &r
+}
+
+func (r Router) mountRoutes(log logger.Logger, st storage.Storage) {
+	r.Mount("/api", api.New(log, st))
+	r.Mount("/", views.New(log, st))
 }

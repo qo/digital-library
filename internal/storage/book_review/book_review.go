@@ -1,6 +1,7 @@
-package storage
+package book_review
 
 import (
+	"database/sql"
 	"fmt"
 )
 
@@ -10,10 +11,10 @@ type BookReview struct {
 	Rating int `json:"rating"`
 }
 
-func (s *Storage) initBookReviews() error {
+func InitTable(db *sql.DB) error {
 	const errMsg = "can't init book reviews table"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     CREATE TABLE IF NOT EXISTS book_reviews(
       user_id INTEGER,
       book_id INTEGER,
@@ -35,10 +36,10 @@ func (s *Storage) initBookReviews() error {
 	return nil
 }
 
-func (s *Storage) GetBookReview(userId, bookId int) (*BookReview, error) {
+func GetBookReview(db *sql.DB, userId, bookId int) (*BookReview, error) {
 	const errMsg = "can't get book review"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     SELECT * FROM book_reviews
     WHERE user_id = ?
     AND book_id = ?
@@ -59,10 +60,10 @@ func (s *Storage) GetBookReview(userId, bookId int) (*BookReview, error) {
 	return &bookReview, nil
 }
 
-func (s *Storage) PutBookReview(bookReview *BookReview) (int, int, error) {
+func PostBookReview(db *sql.DB, bookReview *BookReview) (int, int, error) {
 	const errMsg = "can't put book review"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     INSERT INTO book_reviews
     (user_id, book_id)
     VALUES
@@ -77,10 +78,10 @@ func (s *Storage) PutBookReview(bookReview *BookReview) (int, int, error) {
 	return bookReview.UserId, bookReview.BookId, nil
 }
 
-func (s *Storage) DeleteBookReview(userId, bookId int) (int, int, error) {
+func DeleteBookReview(db *sql.DB, userId, bookId int) (int, int, error) {
 	const errMsg = "can't delete book review"
 
-	stmt, err := s.db.Prepare(`
+	stmt, err := db.Prepare(`
     DELETE FROM book_reviews
     WHERE user_id = ?
     AND book_id = ?
