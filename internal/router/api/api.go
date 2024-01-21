@@ -26,7 +26,7 @@ func New(log logger.Logger, st storage.Storage) *Router {
 func (r *Router) mountRoutes(log logger.Logger, st storage.Storage) {
 	ah := author_handler.New(log, st)
 	bh := book_handler.New(log, st)
-	us := user_handler.New(log, st)
+	uh := user_handler.New(log, st)
 
 	author_router.Init(r, ah)
 	book_router.Init(r, bh)

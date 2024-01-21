@@ -1,34 +1,27 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
 	"path"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	user_handler "github.com/qo/digital-library/internal/handlers/api/user"
+	"github.com/qo/digital-library/internal/handlers/api/user"
 	"github.com/qo/digital-library/internal/logger"
-	user_storage "github.com/qo/digital-library/internal/storage/user"
 )
 
 const (
 	internalServerErrorCode = http.StatusInternalServerError
 )
 
-type userStorage interface {
-	GetUser(id int) (*user_storage.User, error)
-}
-
 type userHandler struct {
 	logger.Logger
-	userStorage
+	user.UserStorage
 }
 
-func NewUserHandler(log logger.Logger, st userStorage) *userHandler {
+func New(log logger.Logger, st user.UserStorage) *userHandler {
 	return &userHandler{
 		log,
 		st,
@@ -48,34 +41,12 @@ func (uh *userHandler) Get() http.HandlerFunc {
 			return
 		}
 
-		response, err := user_handler.New(uh.Logger, uh.userStorage).GetUser(id)
+		handler := user.New(uh.Logger, uh.UserStorage)
+		user, err := handler.GetUser(id)
 		if err != nil {
-			const msg = "get request to api failed"
+			const msg = "api request couldn't be done"
 			http.Error(w, msg, internalServerErrorCode)
-			uh.Warn(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
-			return
-		}
-
-		bytes, err := io.ReadAll(response.Body)
-		if err != nil {
-			const msg = "api response body couldn't be read"
-			http.Error(w, msg, internalServerErrorCode)
-			log.Error(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
-			return
-		}
-
-		var gr user.GetResponse
-		err = json.Unmarshal(bytes, &gr)
-		if err != nil {
-			const msg = "api response couldn't be unmarshalled"
-			http.Error(w, msg, internalServerErrorCode)
-			log.Error(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
-			return
-		}
-
-		if response.StatusCode != http.StatusOK {
-			http.Error(w, gr.Error, response.StatusCode)
-			log.Warn(fmt.Sprintf("request to api returned not-ok status"), "response", gr)
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, msg), "err", err)
 			return
 		}
 
@@ -85,17 +56,17 @@ func (uh *userHandler) Get() http.HandlerFunc {
 		if err != nil {
 			const msg = "can't parse html template"
 			http.Error(w, msg, internalServerErrorCode)
-			log.Error(fmt.Sprintf("%s: %s", errMsg, msg), "template path", tp)
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, msg), "template path", tp)
 			return
 		}
 
-		err = tmpl.Execute(w, gr)
+		err = tmpl.Execute(w, user)
 		if err != nil {
 			const msg = "can't execute html template"
 			http.Error(w, msg, internalServerErrorCode)
-			log.Error(fmt.Sprintf("%s: %s", errMsg, msg), "template path", tp, "template", tmpl)
+			uh.Error(fmt.Sprintf("%s: %s", errMsg, msg), "template path", tp, "template", tmpl)
 		}
 
-		log.Info("user view rendered")
+		uh.Info("user view rendered")
 	}
 }

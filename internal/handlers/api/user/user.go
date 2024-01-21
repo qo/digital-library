@@ -14,7 +14,7 @@ import (
 	"github.com/qo/digital-library/internal/storage/user"
 )
 
-type userStorage interface {
+type UserStorage interface {
 	PostUser(*user.User) error
 	GetUser(id int) (*user.User, error)
 	PutUser(user *user.User) error
@@ -26,10 +26,10 @@ type userStorage interface {
 
 type userHandler struct {
 	logger.Logger
-	userStorage
+	UserStorage
 }
 
-func New(log logger.Logger, us userStorage) *userHandler {
+func New(log logger.Logger, us UserStorage) *userHandler {
 	return &userHandler{
 		log,
 		us,

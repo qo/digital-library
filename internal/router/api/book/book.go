@@ -10,15 +10,15 @@ type BookApi interface {
 }
 
 type Router interface {
-	Get(route string, handler func() http.HandlerFunc)
-	Post(route string, handler func() http.HandlerFunc)
-	Put(route string, handler func() http.HandlerFunc)
-	Delete(route string, handler func() http.HandlerFunc)
+	Get(route string, handler http.HandlerFunc)
+	Post(route string, handler http.HandlerFunc)
+	Put(route string, handler http.HandlerFunc)
+	Delete(route string, handler http.HandlerFunc)
 }
 
 func Init(r Router, a BookApi) {
-	r.Get("/book/{id}", a.Get)
-	r.Post("/book", a.Post)
-	r.Put("/book", a.Put)
-	r.Delete("/book/{id}", a.Delete)
+	r.Get("/book/{id}", a.Get())
+	r.Post("/book", a.Post())
+	r.Put("/book", a.Put())
+	r.Delete("/book/{id}", a.Delete())
 }

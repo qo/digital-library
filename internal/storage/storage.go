@@ -99,62 +99,62 @@ func (st *Storage) initTables() error {
 	return nil
 }
 
-func (s *Storage) GetAuthor(id int) (*author.Author, error) {
+func (s Storage) GetAuthor(id int) (*author.Author, error) {
 	return author.GetAuthor(s.db, id)
 }
 
-func (s *Storage) PostAuthor(a *author.Author) error {
+func (s Storage) PostAuthor(a *author.Author) error {
 	return author.PostAuthor(s.db, a)
 }
 
-func (s *Storage) PutAuthor(a *author.Author) error {
+func (s Storage) PutAuthor(a *author.Author) error {
 	return author.PutAuthor(s.db, a)
 }
 
-func (s *Storage) DeleteAuthor(id int) error {
+func (s Storage) DeleteAuthor(id int) error {
 	return author.DeleteAuthor(s.db, id)
 }
 
-func (s *Storage) GetBook(id int) (*book.Book, error) {
+func (s Storage) GetBook(id int) (*book.Book, error) {
 	return book.GetBook(s.db, id)
 }
 
-func (s *Storage) PostBook(a *book.Book) error {
+func (s Storage) PostBook(a *book.Book) error {
 	return book.PostBook(s.db, a)
 }
 
-func (s *Storage) PutBook(a *book.Book) error {
+func (s Storage) PutBook(a *book.Book) error {
 	return book.PutBook(s.db, a)
 }
 
-func (s *Storage) DeleteBook(id int) error {
+func (s Storage) DeleteBook(id int) error {
 	return book.DeleteBook(s.db, id)
 }
 
-func (s *Storage) GetUser(id int) (*user.User, error) {
+func (s Storage) GetUser(id int) (*user.User, error) {
 	return user.GetUser(s.db, id)
 }
 
-func (s *Storage) PostUser(u *user.User) error {
+func (s Storage) PostUser(u *user.User) error {
 	return user.PostUser(s.db, u)
 }
 
-func (s *Storage) PutUser(u *user.User) error {
+func (s Storage) PutUser(u *user.User) error {
 	return user.PutUser(s.db, u)
 }
 
-func (s *Storage) DeleteUser(id int) error {
+func (s Storage) DeleteUser(id int) error {
 	return user.DeleteUser(s.db, id)
 }
 
-func (s *Storage) GetBookReviews(id int) ([]book_review.BookReview, error) {
+func (s Storage) GetUserBookReviews(id int) ([]book_review.BookReview, error) {
 	return user.GetBookReviews(s.db, id)
 }
 
-func (s *Storage) GetFavoriteAuthors(id int) ([]author.Author, error) {
+func (s Storage) GetUserFavoriteAuthors(id int) ([]author.Author, error) {
 	return user.GetFavoriteAuthors(s.db, id)
 }
 
-func (s *Storage) GetFavoriteBooks(id int) ([]book.Book, error) {
+func (s Storage) GetUserFavoriteBooks(id int) ([]book.Book, error) {
 	return user.GetFavoriteBooks(s.db, id)
 }

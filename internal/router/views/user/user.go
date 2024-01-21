@@ -7,12 +7,12 @@ type userView interface {
 }
 
 type router interface {
-	Get(route string, handler func() http.HandlerFunc)
-	Post(route string, handler func() http.HandlerFunc)
-	Put(route string, handler func() http.HandlerFunc)
-	Delete(route string, handler func() http.HandlerFunc)
+	Get(route string, handler http.HandlerFunc)
+	Post(route string, handler http.HandlerFunc)
+	Put(route string, handler http.HandlerFunc)
+	Delete(route string, handler http.HandlerFunc)
 }
 
 func Init(r router, a userView) {
-	r.Get("/user/{id}", a.Get)
+	r.Get("/user/{id}", a.Get())
 }

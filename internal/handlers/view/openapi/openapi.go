@@ -17,8 +17,10 @@ type openapiHandler struct {
 	logger.Logger
 }
 
-type openapiHandler struct {
-	logger.Logger
+func New(log logger.Logger) *openapiHandler {
+	return &openapiHandler{
+		log,
+	}
 }
 
 func (oh openapiHandler) Get() http.HandlerFunc {
